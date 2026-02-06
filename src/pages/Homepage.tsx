@@ -1,9 +1,9 @@
 import { Footer } from "@/components/layout/Footer"
 import { Header } from "@/components/layout/Header"
 
-const Homepage = () => {
+export const HomePage = () => {
   return (
-    <div>
+    <div >
             <Header />
             <Footer />
        
@@ -11,4 +11,3 @@ const Homepage = () => {
   )
 }
 
-export default Homepage

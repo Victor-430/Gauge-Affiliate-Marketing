@@ -1,10 +1,11 @@
 import { createBrowserRouter } from "react-router";
-import HomePage from "../pages/Homepage";
 import { SignupPage } from "@/pages/SignupPage";
 import { LeadsPage } from "@/pages/LeadsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { AdminPage } from "@/pages/AdminPage";
 import { MainLayout } from "@/layouts/MainLayout";
+import { AssociatesPage } from "@/pages/AssociatesPage";
+import { HomePage } from "@/pages/HomePage";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ export const router = createBrowserRouter([
   {
     path: "/admin",
     Component: AdminPage,
+  },
+  {
+    path: "/associate",
+    Component: AssociatesPage,
   },
   { path: "*", Component: NotFoundPage },
 ]);
