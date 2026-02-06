@@ -1,16 +1,24 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { db } from "@/config/FirebaseConfig";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "@/config/FirebaseConfig";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile,
+} from "firebase/auth";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 
 export const SignupPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<AssociateFormData>({
     email: "",
     fullName: "",
     phone: "",
+    password: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -22,22 +30,30 @@ export const SignupPage = () => {
   };
 
   const handleSubmit = async (e) => {
-    (e.preventDefault, setLoading(true));
-    toast.success("Submission successful");
-
-    console.log("=== STARTING SUBMISSION ===");
-  console.log("Form Data:", formData);
-  console.log("DB Instance:", db);
+    (e.preventDefault(), setLoading(true));
+    console.log("Creating User");
 
     try {
-         console.log("Creating document...");
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password,
+      );
 
-      const docRef = await addDoc(collection(db, "associates"), {
-        
+      const user = userCredential.user;
+      const userName = formData.fullName.split(" ")[0];
+
+      //  update user profile with the first name
+      await updateProfile(user, {
+        displayName: userName,
+      });
+
+      await setDoc(doc(db, "associates", user.uid), {
         email: formData.email,
         fullName: formData.fullName,
         phone: formData.phone,
         status: "pending",
+        emailVerified: false,
         stats: {
           totalLeads: 0,
           convertedLeads: 0,
@@ -48,31 +64,54 @@ export const SignupPage = () => {
         registrationDate: serverTimestamp(),
       });
 
-        console.log("✅ SUCCESS! Document ID:", docRef.id);
-    console.log("Document Path:", docRef.path);
+      await sendEmailVerification(user, {
+        url: "https://affilate.gaugesolution/verify",
+        handleCodeInApp: true,
+      });
+
+      setFormData({ email: "", fullName: "", phone: "", password: "" });
+
+      navigate("/email-confirmation", {
+        state: { email: formData.email },
+      });
 
       toast.success(
-        "Registration successful. Check your email for your unique link and code",
+        "Account created. Please check your email to verify your account",
+        { position: "top-right" },
       );
-      setFormData({ email: "", fullName: "", phone: "" });
     } catch (err) {
       console.error(err);
+      if (
+        err instanceof Error &&
+        err.message === "auth/network-request-failed"
+      ) {
+        toast.error("Network error. Please try again.", {
+          position: "top-right",
+        });
+      } else if (
+        err instanceof Error &&
+        err.message === "auth/email-already-in-use"
+      ) {
+        toast.error("Email already registered. Please  try again.", {
+          position: "top-right",
+        });
+      }
 
-      
-    
-      toast.error("Registration failed. Please  try again.");
+      toast.error("Registration failed. Please  try again.", {
+        position: "top-right",
+      });
     } finally {
       setLoading(false);
-        console.log("=== SUBMISSION ENDED ===");
+      console.log("=== SUBMISSION ENDED ===");
     }
   };
 
   return (
     <div>
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 font-sans ">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 font-sans py-16">
         <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-lg">
           <h1 className="text-3xl font-bold text-center mb-8 font-Lato">
-            Sales Associate Registration
+             Registration Form
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -121,6 +160,21 @@ export const SignupPage = () => {
               />
             </div>
 
+            <div>
+              <Label className="text-sm font-medium text-gray-700 mb-2">
+                Password
+              </Label>
+              <Input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-6"
+                placeholder="Min. 6 characters"
+              />
+            </div>
+
             <Button
               type="submit"
               disabled={loading}
@@ -129,6 +183,13 @@ export const SignupPage = () => {
               {loading ? "Registering..." : "Register "}
             </Button>
           </form>
+
+          <p className="text-center text-sm text-gray-600 mt-6">
+            Already have an account?{" "}
+            <Link to="/login" className="text-blue-600 hover:underline">
+              Sign in
+            </Link>
+          </p>
         </div>
       </div>
     </div>

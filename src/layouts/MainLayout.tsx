@@ -11,12 +11,12 @@ navigation("/")
 }
 
   return (
-    <div className="bg-gray-50" >
+    <div className="" >
         <Navbar />
         {/* prev button */}
         <Button 
         onClick={handleBackButton}
-        className="bg-black hover:bg-black/85 text-white font-sans mx-8 my-8 "> <ArrowLeft className=""/> Back</Button>
+        className="bg-black hover:bg-black/85 text-white font-sans mx-8 my-8 absolute "> <ArrowLeft className=""/> Back</Button>
         <Outlet />
     </div>
   )
