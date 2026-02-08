@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { auth } from "@/config/FirebaseConfig"
 import { sendEmailVerification } from "firebase/auth"
 import { useState } from "react"
 import { useLocation, useNavigate } from "react-router"
@@ -7,9 +8,10 @@ import { toast } from "sonner"
 
 export const SendVerificationPage = () => {
 const location = useLocation()
-const {email,user} = location?.state || {}
+const email = location?.state?.email
 const navigate = useNavigate()
 const [resending, setResending] = useState(false)
+const user = auth.currentUser
 
 const handleEmailResend = async() => {
   if (!user) {
@@ -44,7 +46,7 @@ const handleEmailResend = async() => {
   return (
     <div className="py-16">
         <Card className="w-3/4 mx-auto px-8 text-center font-sans py-8 pb-16 font-medium max-h-min">
-            <img src="/gauge logo.png" alt="logo " className="h-20 w-30" />
+            <img src="/gauge-logo.png" alt="logo " className="h-20 w-30" />
                <p className="text-gray-600 mb-6">
             We've sent a verification email to <strong>{email}</strong>
           </p>

@@ -29,7 +29,7 @@ export const SignupPage = () => {
     });
   };
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement> ) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     console.log("Creating User");
@@ -76,7 +76,7 @@ export const SignupPage = () => {
       );
 
       navigate("/email-confirmation", {
-        state: { email: formData.email, user },
+        state: { email: formData.email },
       });
 
       setFormData({ email: "", fullName: "", phone: "", password: "" });
@@ -106,6 +106,17 @@ export const SignupPage = () => {
         toast("Password should be at least 6 characters.", {
           position: "top-right",
         });
+      } else if (
+        err instanceof Error &&
+        "code" in err &&
+        err.code === "auth/password-does-not-meet-requirements"
+      ) {
+        toast.error(
+          "Password must contain a lower case, an upper case,symbol and number",
+          {
+            position: "top-right",
+          },
+        );
       } else {
         toast.error("Registration failed. Please  try again.", {
           position: "top-right",

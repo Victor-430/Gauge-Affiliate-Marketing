@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const API_URL = import.meta.env.VITE_EMAIL_API_URL || "http://localhost:3000";
 
 export const useAuthActiviation = () => {
   const navigate = useNavigate();
