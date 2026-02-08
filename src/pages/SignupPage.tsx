@@ -29,8 +29,9 @@ export const SignupPage = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    (e.preventDefault(), setLoading(true));
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement> ) => {
+    e.preventDefault();
+    setLoading(true);
     console.log("Creating User");
 
     try {
@@ -65,41 +66,51 @@ export const SignupPage = () => {
       });
 
       await sendEmailVerification(user, {
-        url: "https://affilate.gaugesolution/verify",
-        handleCodeInApp: true,
-      });
-
-      setFormData({ email: "", fullName: "", phone: "", password: "" });
-
-      navigate("/email-confirmation", {
-        state: { email: formData.email },
+        // url: "https://affiliate.gaugesolution/verify-success",
+        url: "http://localhost:5173/verify-success",
       });
 
       toast.success(
         "Account created. Please check your email to verify your account",
         { position: "top-right" },
       );
+
+      navigate("/email-confirmation", {
+        state: { email: formData.email, user },
+      });
+
+      setFormData({ email: "", fullName: "", phone: "", password: "" });
     } catch (err) {
       console.error(err);
       if (
         err instanceof Error &&
-        err.message === "auth/network-request-failed"
+        "code" in err &&
+        err.code === "auth/network-request-failed"
       ) {
         toast.error("Network error. Please try again.", {
           position: "top-right",
         });
       } else if (
         err instanceof Error &&
-        err.message === "auth/email-already-in-use"
+        "code" in err &&
+        err.code === "auth/email-already-in-use"
       ) {
         toast.error("Email already registered. Please  try again.", {
           position: "top-right",
         });
+      } else if (
+        err instanceof Error &&
+        "code" in err &&
+        err.code === "auth/weak-password"
+      ) {
+        toast("Password should be at least 6 characters.", {
+          position: "top-right",
+        });
+      } else {
+        toast.error("Registration failed. Please  try again.", {
+          position: "top-right",
+        });
       }
-
-      toast.error("Registration failed. Please  try again.", {
-        position: "top-right",
-      });
     } finally {
       setLoading(false);
       console.log("=== SUBMISSION ENDED ===");
@@ -111,7 +122,7 @@ export const SignupPage = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 font-sans py-16">
         <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-lg">
           <h1 className="text-3xl font-bold text-center mb-8 font-Lato">
-             Registration Form
+            Registration Form
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">

@@ -6,7 +6,7 @@ import { AdminPage } from "@/pages/AdminPage";
 import { MainLayout } from "@/layouts/MainLayout";
 import { AssociatesPage } from "@/pages/AssociatesPage";
 import { HomePage } from "@/pages/HomePage";
-import { EmailConfirmationPage } from "@/pages/EmailConfirmationPage";
+import { SendVerificationPage } from "@/pages/SendVerificationPage";
 import { VerificationPage } from "@/pages/VerificationPage";
 
 export const router = createBrowserRouter([
@@ -22,7 +22,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/email-confirmation",
-        Component: EmailConfirmationPage,
+        Component: SendVerificationPage,
       },
       {
         path: "/verify-success",
