@@ -28,7 +28,7 @@ const handleEmailResend = async() => {
                 // url: "https://affiliate.gaugesolution/verify-success",
         url: "http://localhost:5173/verify-success",
       });
-      toast.success("Verification email resent", { position: "top-right" });
+      toast.success("Verification Email Resent", { position: "top-right" });
     } catch (error) {
       console.error("Error resending email:", error);
       toast.error("Failed to resend email. Please try again.", {
@@ -47,7 +47,7 @@ const handleEmailResend = async() => {
     <div className="py-16">
         <Card className="w-3/4 mx-auto px-8 text-center font-sans py-8 pb-16 font-medium max-h-min">
             <img src="/gauge-logo.png" alt="logo " className="h-20 w-30" />
-               <p className="text-gray-600 mb-6">
+               <p className="text-gray-600 text-2xl font-semibold mb-6">
             We've sent a verification email to <strong>{email}</strong>
           </p>
           <p className="text-sm text-gray-500 mb-8">

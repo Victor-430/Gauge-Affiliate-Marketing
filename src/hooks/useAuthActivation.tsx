@@ -14,7 +14,7 @@ export const useAuthActiviation = () => {
       if (user && user.emailVerified) {
         try {
           const idToken = await getIdToken(user);
-
+          console.log(idToken);
           const response = await fetch(`${API_URL}/api/activate-associate`, {
             method: "POST",
             headers: {
@@ -24,6 +24,13 @@ export const useAuthActiviation = () => {
           });
 
           const data = await response.json();
+
+          if (!response.ok) {
+            console.error(data.error);
+            toast("An error occurred during activation", {
+              position: "top-right",
+            });
+          }
 
           if (data.success) {
             toast(data?.message, { position: "top-right" });
@@ -40,7 +47,6 @@ export const useAuthActiviation = () => {
       }
     });
 
-   return () => authStateChange()
-
+    return () => authStateChange();
   }, [navigate]);
 };

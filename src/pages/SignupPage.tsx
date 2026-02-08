@@ -103,6 +103,14 @@ export const SignupPage = () => {
         "code" in err &&
         err.code === "auth/weak-password"
       ) {
+        toast.error("Password should be at least 6 characters.", {
+          position: "top-right",
+        });
+      } else if (
+        err instanceof Error &&
+        "code" in err &&
+        err.code === "auth/weak-password"
+      ) {
         toast("Password should be at least 6 characters.", {
           position: "top-right",
         });

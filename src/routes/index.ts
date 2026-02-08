@@ -2,12 +2,13 @@ import { createBrowserRouter } from "react-router";
 import { SignupPage } from "@/pages/SignupPage";
 import { LeadsPage } from "@/pages/LeadsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
-import { AdminPage } from "@/pages/AdminPage";
+import { AdminPage } from "@/pages/login/AdminPage";
 import { MainLayout } from "@/layouts/MainLayout";
-import { AssociatesPage } from "@/pages/AssociatesPage";
+import { AssociatesPage } from "@/pages/login/AssociatesPage";
 import { HomePage } from "@/pages/HomePage";
 import { SendVerificationPage } from "@/pages/SendVerificationPage";
 import { VerificationPage } from "@/pages/VerificationPage";
+import { ReferralPage } from "@/pages/ReferralPage";
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
       {
         path: "/leads",
         Component: LeadsPage,
+      },
+      {
+        path: "/sales",
+        Component: ReferralPage,
       },
     ],
   },
