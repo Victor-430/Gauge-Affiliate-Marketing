@@ -1,7 +1,7 @@
 export interface Associate {
   email: string;
   fullName: string;
-  phone: string;
+  phone: number;
   uniqueCode: string;
   affiliateLink: string;
   registrationDate: Timestamp;
