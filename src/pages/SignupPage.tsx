@@ -58,7 +58,7 @@ export const SignupPage = () => {
         stats: {
           totalLeads: 0,
           convertedLeads: 0,
-          closeDeals: 0,
+          closedDeals: 0,
           rejectedDeals: 0,
           pendingDeals: 0,
         },

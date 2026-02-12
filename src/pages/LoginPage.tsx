@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth } from "@/config/FirebaseConfig";
 import { signInWithEmailAndPassword, getIdToken } from "firebase/auth";
+import { Eye, EyeOff, HomeIcon } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -16,6 +17,7 @@ export const LoginPage = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [isView, setIsView] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -85,19 +87,25 @@ export const LoginPage = () => {
         err.code === "auth/invalid-credential"
       ) {
         toast.error("Invalid email or password", { position: "top-right" });
-      } else if ( err instanceof Error &&
+      } else if (
+        err instanceof Error &&
         "code" in err &&
-        err.code === "auth/user-not-found") {
+        err.code === "auth/user-not-found"
+      ) {
         toast.error("No account found with this email", {
           position: "top-right",
         });
-      } else if ( err instanceof Error &&
+      } else if (
+        err instanceof Error &&
         "code" in err &&
-        err.code === "auth/wrong-password") {
+        err.code === "auth/wrong-password"
+      ) {
         toast.error("Incorrect password", { position: "top-right" });
-      } else if ( err instanceof Error &&
+      } else if (
+        err instanceof Error &&
         "code" in err &&
-        err.code === "auth/too-many-requests") {
+        err.code === "auth/too-many-requests"
+      ) {
         toast.error("Too many failed attempts. Please try again later.", {
           position: "top-right",
         });
@@ -111,8 +119,23 @@ export const LoginPage = () => {
     }
   };
 
+  const handleHomeButton = () => {
+    navigate("/", { replace: true });
+  };
+
+  const handlePasswordView = () => {
+    setIsView(!isView);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50   py-16">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 relative  py-16">
+      <Button
+        onClick={handleHomeButton}
+        className="absolute top-4 left-4 mt-4 ml-4"
+      >
+        {" "}
+        <HomeIcon className="mr-2 h-4 w-4" /> Home
+      </Button>
       <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-lg">
         <div
           className="flex items-center
@@ -138,12 +161,12 @@ export const LoginPage = () => {
             />
           </div>
 
-          <div>
+          <div className="relative">
             <Label className="text-sm font-medium text-gray-700 mb-2">
               Password
             </Label>
             <Input
-              type="password"
+              type={isView ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleChange}
@@ -151,6 +174,17 @@ export const LoginPage = () => {
               className="w-full px-4 py-6"
               placeholder="Enter your password"
             />
+            {isView ? (
+              <Eye
+                className="absolute right-4 top-11 z-10 w-5 h-5 cursor-pointer"
+                onClick={handlePasswordView}
+              />
+            ) : (
+              <EyeOff
+                className="absolute right-4 top-11 z-10 w-5 h-5 cursor-pointer"
+                onClick={handlePasswordView}
+              />
+            )}
           </div>
 
           <Button
