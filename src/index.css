@@ -1,18 +1,15 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
-/* fonts */
-@theme {
-  --font-sans:Google sans, sans-serif;
-  --font-Lato:Lato, sans-serif;
+* {
+  font-family: "IBM Plex Sans", sans-serif;
 }
 
-/* custom colors */
-@theme{
-  --color-button:#FFC905
+@custom-variant dark (&:is(.dark *));
 
+/* custom colors */
+@theme {
+  --color-button: #ffc905;
 }
 
 @theme inline {
@@ -124,8 +121,6 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.552 0.016 285.938);
 }
-
-
 
 @layer base {
   * {

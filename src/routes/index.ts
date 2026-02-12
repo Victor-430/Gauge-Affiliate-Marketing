@@ -2,14 +2,16 @@ import { createBrowserRouter } from "react-router";
 import { SignupPage } from "@/pages/SignupPage";
 import { LeadsPage } from "@/pages/LeadsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
-import { AdminPage } from "@/pages/dashboard/AdminPage";
 import { MainLayout } from "@/layouts/MainLayout";
-import { AssociatesPage } from "@/pages/dashboard/AssociatesPage";
 import { HomePage } from "@/pages/HomePage";
 import { SendVerificationPage } from "@/pages/SendVerificationPage";
 import { VerificationPage } from "@/pages/VerificationPage";
 import { ReferralPage } from "@/pages/ReferralPage";
 import { LoginPage } from "@/pages/LoginPage";
+import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
+import {  ProtectedRoutes } from "@/middleware/ProtectedRoutes";
+import { AdminDashboard } from "@/pages/dashboard/AdminDashboard";
+import { AssociateDashboard } from "@/pages/dashboard/AssociateDashboard";
 
 export const router = createBrowserRouter([
   {
@@ -38,19 +40,34 @@ export const router = createBrowserRouter([
         path: "/sales",
         Component: ReferralPage,
       },
-      { path: "/login", Component: LoginPage },
+      // { path: "/login", Component: LoginPage },
     ],
   },
 
-  {
-    path: "/admin/dashboard",
+// {
+//   path: "/admin/dashboard",
+//   element: (
+//     <ProtectedRoutes allowedRoles="admin">
+//       <AdminDashboard />
+//     </ProtectedRoutes>
+//   ),
+// },
+//   {
+//     path: "/associate/dashboard",
+//     element:(<ProtectedRoutes allowedRoles = "associate">
+//       <AssociateDashboard />
+//       </ProtectedRoutes>)
     
-    Component: AdminPage,
-  },
-  {
-    path: "/associate/dashboard",
-    Component: AssociatesPage,
-  },
+//   },
+
+{path:"/associate/dashboard",
+  Component:AssociateDashboard
+},
+{path:"/admin/dashboard",
+  Component:AdminDashboard
+},
   { path: "/login", Component: LoginPage },
+  { path: "/unauthorized", Component: UnauthorizedPage },
+
   { path: "*", Component: NotFoundPage },
 ]);

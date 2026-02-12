@@ -32,7 +32,7 @@ export const LoginPage = () => {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         formData.email,
-        formData.password
+        formData.password,
       );
 
       const user = userCredential.user;
@@ -60,13 +60,11 @@ export const LoginPage = () => {
       const data = await response.json();
 
       if (!data?.success) {
-        toast.error(data?.error , {
+        toast.error(data?.error, {
           position: "top-right",
         });
         return;
       }
-
-      
 
       toast.success("Login successful!", { position: "top-right" });
 
@@ -78,19 +76,28 @@ export const LoginPage = () => {
       } else {
         toast.error("Invalid user role", { position: "top-right" });
       }
-
-    } catch (err: any) {
+    } catch (err) {
       console.error("Login error:", err);
 
-      if (err.code === "auth/invalid-credential") {
+      if (
+        err instanceof Error &&
+        "code" in err &&
+        err.code === "auth/invalid-credential"
+      ) {
         toast.error("Invalid email or password", { position: "top-right" });
-      } else if (err.code === "auth/user-not-found") {
+      } else if ( err instanceof Error &&
+        "code" in err &&
+        err.code === "auth/user-not-found") {
         toast.error("No account found with this email", {
           position: "top-right",
         });
-      } else if (err.code === "auth/wrong-password") {
+      } else if ( err instanceof Error &&
+        "code" in err &&
+        err.code === "auth/wrong-password") {
         toast.error("Incorrect password", { position: "top-right" });
-      } else if (err.code === "auth/too-many-requests") {
+      } else if ( err instanceof Error &&
+        "code" in err &&
+        err.code === "auth/too-many-requests") {
         toast.error("Too many failed attempts. Please try again later.", {
           position: "top-right",
         });
@@ -105,9 +112,15 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 font-sans py-16">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50   py-16">
       <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-center mb-8">Login</h1>
+        <div
+          className="flex items-center
+          justify-center"
+        >
+          <img src="/public/gauge-logo.png" alt="logo" className="w-20" />
+        </div>
+        <h1 className="text-xl font-medium mb-8">Login</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>

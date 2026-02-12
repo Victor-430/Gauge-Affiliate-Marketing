@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, getIdToken, type User } from "firebase/auth";
 import { auth } from "@/config/FirebaseConfig";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 interface AuthContextType {
   user: User | null;
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
           const idToken = await getIdToken(firebaseUser);
           
-          const response = await fetch(`${API_URL}/api/get-user-role`, {
+          const response = await fetch(`${API_URL}/api/auth/get-user-role`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

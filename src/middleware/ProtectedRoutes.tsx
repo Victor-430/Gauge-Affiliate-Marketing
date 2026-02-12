@@ -2,12 +2,13 @@ import { Navigate } from "react-router";
 import { useAuth } from "@/context/loginAuthContext"; 
 import { Loader2 } from "lucide-react";
 
+
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles: string[];
+  allowedRoles: "admin" | "associate"
 }
 
-export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
+export const ProtectedRoutes = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const { user, role, loading } = useAuth();
 
   if (loading) {
@@ -22,7 +23,7 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
     return <Navigate to="/login" replace />;
   }
 
-  if (role && !allowedRoles.includes(role)) {
+  if (role && !allowedRoles) {
     return <Navigate to="/unauthorized" replace />;
   }
 

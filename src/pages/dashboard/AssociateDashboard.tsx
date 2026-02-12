@@ -19,7 +19,7 @@
 // }
 
 
-export  function AssociatesPage() {
+export  const AssociateDashboard = () => {
  
   return (
     <h1>Welcome</h1>
