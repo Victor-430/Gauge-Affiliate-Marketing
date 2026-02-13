@@ -171,7 +171,7 @@ export const LeadsPage = () => {
             </Label>
             <Input
               type="text"
-              name="company name"
+              name="companyName"
               value={formData.companyName}
               required
               placeholder="Gauge"
@@ -206,7 +206,7 @@ export const LeadsPage = () => {
                 </Label>
                 <Input
                   type="text"
-                  name="full name"
+                  name="contactFullName"
                   value={formData.contactFullName}
                   required
                   placeholder="John"
@@ -220,7 +220,7 @@ export const LeadsPage = () => {
                 </Label>
                 <Input
                   type="text"
-                  name="Role"
+                  name="contactRole"
                   value={formData.contactRole}
                   required
                   placeholder="Manager"
@@ -234,7 +234,7 @@ export const LeadsPage = () => {
                 </Label>
                 <Input
                   type="email"
-                  name="email"
+                  name="contactEmail"
                   value={formData.contactEmail}
                   required
                   placeholder="john@example.com"
@@ -248,7 +248,7 @@ export const LeadsPage = () => {
                 </Label>
                 <Input
                   type="tel"
-                  name="phone"
+                  name="contactPhone"
                   value={formData.contactPhone}
                   required
                   placeholder="+234 8903838"
@@ -267,7 +267,7 @@ export const LeadsPage = () => {
             <div className="relative">
               <Input
                 type="text"
-                name="code"
+                name="referralCode"
                 value={formData.referralCode}
                 required
                 placeholder="GAM1289FHK"
