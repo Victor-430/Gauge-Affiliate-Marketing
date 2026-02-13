@@ -138,7 +138,7 @@ export const SignupPage = () => {
 
   return (
     <div>
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 font-sans py-16">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50  py-16">
         <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-lg">
           <h1 className="text-3xl font-bold text-center mb-8 font-Lato">
             Registration Form

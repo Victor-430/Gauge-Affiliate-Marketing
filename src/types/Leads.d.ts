@@ -1,5 +1,3 @@
-
-
 // export interface Lead {
 //   associateId: string;
 //   associateCode: string;
@@ -15,40 +13,47 @@
 //   closedAt?: FirebaseFirestore.Timestamp;
 // }
 
+export interface LeadForm {
+  companyName: string;
+  industry: string;
+  contactFullName: string;
+  contactRole: string;
+  contactEmail: string;
+  contactPhone: string;
+  associateCode?: string;
+}
 
 export type LeadStatus = "new" | "converted";
 export type DealStatus = "pending" | "closed" | "rejected";
 
-
 export interface Lead {
   // Associate Information
-  associateId: string;           
-  associateCode: string;         
-  associateName: string;         
-  associateEmail: string;        
-  
-  // Company Information 
+  associateId: string;
+  associateCode: string;
+  associateName: string;
+  associateEmail: string;
+
+  // Company Information
   companyName: string;
   industry: string;
-  
-  // Contact Information 
+
+  // Contact Information
   contactFullName: string;
-  contactRole: string;          
+  contactRole: string;
   contactEmail: string;
   contactPhone: string;
-  
+
   // Status Tracking
-  leadStatus: LeadStatus;        
-  dealStatus: DealStatus | null; 
-  
+  leadStatus: LeadStatus;
+  dealStatus: DealStatus | null;
+
   // Timestamps
-  submittedAt: FirebaseFirestore.Timestamp;     
-  convertedAt?: FirebaseFirestore.Timestamp;     
-  dealClosedAt?: FirebaseFirestore.Timestamp;    
-  
-  // Admin Actions 
-  adminNotes?: string;           
+  submittedAt: FirebaseFirestore.Timestamp;
+  convertedAt?: FirebaseFirestore.Timestamp;
+  dealClosedAt?: FirebaseFirestore.Timestamp;
+
+  // Admin Actions
+  adminNotes?: string;
   proposalSent?: boolean;
   proposalSentAt?: FirebaseFirestore.Timestamp;
 }
-
