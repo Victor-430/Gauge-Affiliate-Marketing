@@ -2,10 +2,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { db } from "@/config/FirebaseConfig";
-import { doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
+import { toast } from "sonner";
 
 export interface LeadForm {
   companyName: string;
@@ -73,16 +81,56 @@ export const LeadsPage = () => {
     // if link contains ref get code
     // verify code if it exists in database
     if (ref) {
-      setFormData({ referralCode: "" });
+      setFormData((prev) => ({ ...prev, referralCode: ref }));
+      verifyReferralCode(ref);
     }
     // else update referral code based on the associate input also verify code exists
-  }, []);
+  }, [ref]);
+
+  const verifyReferralCode = async (code: string) => {
+    if (!code || code.trim() === "") {
+      setIsValidCode(false);
+      return;
+    }
+
+    setIsVerifyingCode(true);
+    try {
+      const associatesRef = collection(db, "associates");
+      const q = query(associatesRef, where("uniqueCode", "==", code));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        setIsValidCode(true);
+        toast.success("Valid referral code", { position: "top-right" });
+      } else {
+        console.log("code ran 1");
+        setIsValidCode(false);
+        toast.success("Invalid referral code1. Please check and try again", {
+          position: "top-right",
+        });
+        console.log("code ran 2");
+      }
+    } catch (error) {
+      console.error("Error verifying code:", error);
+      toast.error("Failed to verify referral code", {
+        position: "top-right",
+      });
+      setIsValidCode(false);
+    } finally {
+      setIsVerifyingCode(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+
+    if (name === "referralCode" && value.length >= 8) {
+      verifyReferralCode(value);
+    }
   };
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -233,7 +281,7 @@ export const LeadsPage = () => {
                 }`}
                 disabled={isVerifyingCode}
               />
-               {isVerifyingCode && (
+              {isVerifyingCode && (
                 <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-gray-400" />
               )}
               {!isVerifyingCode && formData.referralCode && (
@@ -272,10 +320,9 @@ export const LeadsPage = () => {
             </div>
             {!isValidCode && formData.referralCode && !isVerifyingCode && (
               <p className="text-xs text-red-500 mt-1">
-                Invalid referral code. 
+                Invalid referral code.
               </p>
             )}
-            
           </div>
 
           <Button
