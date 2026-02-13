@@ -2,16 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { db } from "@/config/FirebaseConfig";
-import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  setDoc,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 
@@ -74,20 +67,12 @@ export const LeadsPage = () => {
   const [isValidCode, setIsValidCode] = useState(false);
   const [isVerifyingCode, setIsVerifyingCode] = useState(false);
   const [refCode] = useSearchParams();
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasVerifiedUrlCode = useRef(false);
 
   const ref = refCode.get("ref");
 
-  useEffect(() => {
-    // if link contains ref get code
-    // verify code if it exists in database
-    if (ref) {
-      setFormData((prev) => ({ ...prev, referralCode: ref }));
-      verifyReferralCode(ref);
-    }
-    // else update referral code based on the associate input also verify code exists
-  }, [ref]);
-
-  const verifyReferralCode = async (code: string) => {
+  const verifyReferralCode = useCallback(async (code: string) => {
     if (!code || code.trim() === "") {
       setIsValidCode(false);
       return;
@@ -105,7 +90,7 @@ export const LeadsPage = () => {
       } else {
         console.log("code ran 1");
         setIsValidCode(false);
-        toast.success("Invalid referral code1. Please check and try again", {
+        toast.error("Invalid referral code. Please check and try again", {
           position: "top-right",
         });
         console.log("code ran 2");
@@ -119,39 +104,86 @@ export const LeadsPage = () => {
     } finally {
       setIsVerifyingCode(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+   
+    if (ref && !hasVerifiedUrlCode.current) {
+      hasVerifiedUrlCode.current = true;
+      setFormData((prev) => ({ ...prev, referralCode: ref }));
+      verifyReferralCode(ref);
+    }
+  }, [ref, verifyReferralCode]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
+  };
 
-    if (name === "referralCode" && value.length >= 8) {
-      verifyReferralCode(value);
+  const handleReferralCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+
+    if (ref) {
+      return;
+    }
+    setFormData((prev) => ({
+      ...prev,
+      referralCode: value,
+    }));
+
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    setIsValidCode(false);
+
+    if (value.length >= 10) {
+      debounceTimer.current = setTimeout(() => {
+        verifyReferralCode(value);
+      }, 500);
     }
   };
 
   const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    setFormData({
-      contactEmail: "",
-      contactFullName: "",
-      referralCode: "",
-      contactPhone: "",
-      companyName: "",
-      contactRole: "",
-      industry: "",
-    });
 
-    // get associate with the referral code
-    // update associate with client details
     try {
-      // await setDoc(doc(db, "leads", ))
-    } catch (error) {}
+      console.log("Submitting:", formData);
+      toast.success("Lead submitted successfully", {
+        position: "top-right",
+      });
+      setFormData({
+        contactEmail: "",
+        contactFullName: "",
+        referralCode: "",
+        contactPhone: "",
+        companyName: "",
+        contactRole: "",
+        industry: "",
+      });
+      setIsValidCode(false);
+      hasVerifiedUrlCode.current = false;
+    } catch (error) {
+      console.error("Submit error:", error);
+      toast.error("Failed to submit lead", {
+        position: "top-right",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50  py-16">
@@ -271,7 +303,7 @@ export const LeadsPage = () => {
                 value={formData.referralCode}
                 required
                 placeholder="GAM1289FHK"
-                onChange={handleChange}
+                onChange={handleReferralCodeChange}
                 className={`w-full px-4 py-6 ${
                   isValidCode
                     ? "border-green-500 focus:ring-green-500"
@@ -279,7 +311,7 @@ export const LeadsPage = () => {
                       ? "border-red-500 focus:ring-red-500"
                       : ""
                 }`}
-                disabled={isVerifyingCode}
+                disabled={isVerifyingCode || !!ref}
               />
               {isVerifyingCode && (
                 <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-gray-400" />

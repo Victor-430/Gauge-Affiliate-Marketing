@@ -10,7 +10,7 @@ navigation("/admin")
 
   return (
     <div className="w-full h-16 bg-primary font-sans text-white flex justify-between px-8 py-2 ">
-      <img src="/public/gauge logo.png" alt="logo" className="bg-transparent " />
+      <img src="/gauge logo.png" alt="logo" className="bg-transparent " />
 
       <Button 
       onClick={handleAdminLogin}
