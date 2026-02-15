@@ -72,6 +72,8 @@ export const LeadsPage = () => {
 
   const ref = refCode.get("ref");
 
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
   const verifyReferralCode = useCallback(async (code: string) => {
     if (!code || code.trim() === "") {
       setIsValidCode(false);
@@ -107,7 +109,6 @@ export const LeadsPage = () => {
   }, []);
 
   useEffect(() => {
-   
     if (ref && !hasVerifiedUrlCode.current) {
       hasVerifiedUrlCode.current = true;
       setFormData((prev) => ({ ...prev, referralCode: ref }));
@@ -147,15 +148,42 @@ export const LeadsPage = () => {
     }
   };
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
       console.log("Submitting:", formData);
+
+      const res = await fetch(`${API_URL}/api/leads/submit`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contactEmail: formData.contactEmail,
+          contactFullName: formData.contactFullName,
+          contactRole: formData.contactRole,
+          contactPhone: formData.contactPhone,
+          companyName: formData.companyName,
+          industry: formData.industry,
+          referralCode: formData.referralCode,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!data?.success) {
+        toast.error(data?.error || "Failed to submit lead", {
+          position: "top-right",
+        });
+        return;
+      }
+
       toast.success("Lead submitted successfully", {
         position: "top-right",
       });
+
       setFormData({
         contactEmail: "",
         contactFullName: "",
@@ -167,6 +195,7 @@ export const LeadsPage = () => {
       });
       setIsValidCode(false);
       hasVerifiedUrlCode.current = false;
+      console.log("Form Submitted")
     } catch (error) {
       console.error("Submit error:", error);
       toast.error("Failed to submit lead", {
