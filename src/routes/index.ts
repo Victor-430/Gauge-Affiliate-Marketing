@@ -9,9 +9,10 @@ import { VerificationPage } from "@/pages/VerificationPage";
 import { ReferralPage } from "@/pages/ReferralPage";
 import { LoginPage } from "@/pages/LoginPage";
 import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
-import {  ProtectedRoutes } from "@/middleware/ProtectedRoutes";
+// import {  ProtectedRoutes } from "@/middleware/ProtectedRoutes";
 import { AdminDashboard } from "@/pages/dashboard/AdminDashboard";
-import { AssociateDashboard } from "@/pages/dashboard/AssociateDashboard";
+import AssociateDashboard from "@/pages/Associate-Dashboard/AssociateDashboard";
+import AssociateLeads from "@/pages/Associate-Dashboard/AssociateLead";
 
 export const router = createBrowserRouter([
   {
@@ -61,7 +62,11 @@ export const router = createBrowserRouter([
 //   },
 
 {path:"/associate/dashboard",
-  Component:AssociateDashboard
+  Component:AssociateDashboard,
+ 
+},
+{path:"/associate/leads",
+  Component:AssociateLeads
 },
 {path:"/admin/dashboard",
   Component:AdminDashboard
