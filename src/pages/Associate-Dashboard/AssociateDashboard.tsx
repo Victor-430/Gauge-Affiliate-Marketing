@@ -58,7 +58,7 @@ export default function AssociateDashboard() {
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {statCards.map((stat) => (
-            <Card key={stat.label} className="border border-border">
+            <Card key={stat.label} className="border border-border hover:scale-110">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   {stat.label}

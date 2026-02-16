@@ -1,9 +1,4 @@
-import {
-  LayoutDashboard,
-  Users,
-  SendHorizontal,
-  LogOut,
-} from "lucide-react";
+import { LayoutDashboard, Users, SendHorizontal, LogOut } from "lucide-react";
 import { NavLink } from "react-router";
 import {
   Sidebar,
@@ -16,7 +11,6 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import { mockAssociate } from "@/data/mockData";
 
 const navItems = [
   {
@@ -31,33 +25,31 @@ const navItems = [
 
 export function AppSidebar() {
   return (
-    <Sidebar className="border-r-0">
-      <SidebarHeader className="p-6 border-b border-white ">
+    <Sidebar className="border-r-0 ">
+      <SidebarHeader className="p-6 border-b border-gray-50 bg-black ">
         <div className="flex items-center gap-2">
-         
-            <img src="/gauge-logo.png" alt="logo" className="w-20"/>
-          
+          <img src="/Gauge logo-white.png" alt="logo" className="w-20" />
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="px-3 py-4">
+      <SidebarContent className="px-3 py-4 bg-black ">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild disabled={!item.active}>
-                    
-                      <NavLink
-                        to={item.url}
-                        className={({ isActive }) =>
-                          `${isActive} ? "bg-black text-sidebar-accent-foreground font-medium" : "flex items-center gap-3 px-3 py-2 rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"`
-                        }
-                      >
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
-                      </NavLink>
-                    
+                    <NavLink
+                      to={item.url}
+                      className={({ isActive }) =>
+                        isActive
+                          ? "bg-white text-white font-medium"
+                          : "flex items-center gap-3 px-3 py-2 rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+                      }
+                    >
+                      <item.icon className="h-4 w-4 " />
+                      <span className=" ">{item.title}</span>
+                    </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -66,16 +58,10 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-sidebar-border">
-        <div className="flex items-center gap-3">
-        
-            <LogOut />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-sidebar-foreground truncate">
-              logout
-            </p>
-          
-          </div>
+      <SidebarFooter className="px-6 pb-10 pt-3 border-t border-sidebar-border bg-black">
+        <div className="flex cursor-pointer items-center gap-3">
+          <LogOut className="text-white" />
+          <p className="text-sm text-white   truncate">Logout</p>
         </div>
       </SidebarFooter>
     </Sidebar>
