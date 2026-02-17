@@ -48,19 +48,41 @@ export default function AssociateLeads() {
   const [leads, setLeads] = useState<Lead[]>(mockLeads);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
+  const canConvert = (lead: Lead) => {
+    return lead.leadStatus === "new" && lead.dealStatus !== "closed" && lead.dealStatus !== "rejected";
+  };
+
+  const canUndo = (lead: Lead) => {
+    if (lead.leadStatus !== "converted" || !lead.convertedAt) return false;
+    if (lead.dealStatus === "closed" || lead.dealStatus === "rejected") return false;
+    const convertedTime = new Date(lead.convertedAt).getTime();
+    const now = Date.now();
+    return now - convertedTime < 30 * 60 * 1000; // 30 minutes
+  };
+
   const handleConvert = (leadId: string) => {
+    const lead = leads.find((l) => l.id === leadId);
+    if (lead && !canConvert(lead)) {
+      toast.error("Cannot convert: deal is closed or rejected");
+      return;
+    }
     setLeads((prev) =>
       prev.map((lead) =>
         lead.id === leadId
-          ? { ...lead, leadStatus: "converted" as const, convertedAt: new Date().toISOString().split("T")[0] }
+          ? { ...lead, leadStatus: "converted" as const, convertedAt: new Date().toISOString() }
           : lead
       )
     );
     setSelectedLead(null);
-    toast.success("Lead marked as converted");
+    toast.success("Lead marked as converted. You can undo within 30 minutes.");
   };
 
   const handleUndo = (leadId: string) => {
+    const lead = leads.find((l) => l.id === leadId);
+    if (lead && !canUndo(lead)) {
+      toast.error("Undo window has expired (30 minutes)");
+      return;
+    }
     setLeads((prev) =>
       prev.map((lead) =>
         lead.id === leadId
@@ -124,12 +146,13 @@ export default function AssociateLeads() {
                           <DropdownMenuItem onClick={() => setSelectedLead(lead)}>
                             View Details
                           </DropdownMenuItem>
-                          {lead.leadStatus === "new" ? (
+                          {canConvert(lead) && (
                             <DropdownMenuItem onClick={() => handleConvert(lead.id)}>
                               <ArrowUpRight className="h-4 w-4 mr-2" />
                               Convert
                             </DropdownMenuItem>
-                          ) : (
+                          )}
+                          {canUndo(lead) && (
                             <DropdownMenuItem onClick={() => handleUndo(lead.id)}>
                               <Undo2 className="h-4 w-4 mr-2" />
                               Undo Convert
@@ -177,12 +200,13 @@ export default function AssociateLeads() {
                 <Separator />
 
                 <div className="flex justify-end gap-2">
-                  {selectedLead.leadStatus === "new" ? (
+                  {canConvert(selectedLead) && (
                     <Button onClick={() => handleConvert(selectedLead.id)} className="gap-1.5">
                       <ArrowUpRight className="h-4 w-4" />
                       Convert Lead
                     </Button>
-                  ) : (
+                  )}
+                  {canUndo(selectedLead) && (
                     <Button variant="outline" onClick={() => handleUndo(selectedLead.id)} className="gap-1.5">
                       <Undo2 className="h-4 w-4" />
                       Undo Convert

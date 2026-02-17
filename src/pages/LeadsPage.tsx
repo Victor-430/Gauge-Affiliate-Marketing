@@ -8,18 +8,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 
-export interface LeadForm {
-  companyName: string;
-  industry: string;
-  contactFullName: string;
-  contactRole: string;
-  contactEmail: string;
-  contactPhone: string;
-  referralCode?: string;
-}
-
-export type LeadStatus = "new" | "converted";
-export type DealStatus = "pending" | "closed" | "rejected";
 
 export interface Lead {
   // Associate Information
@@ -219,7 +207,7 @@ export const LeadsPage = () => {
       <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-lg">
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="text-center mbb-8">
-            <img src="/gauge-logo.png" className="w-20 mx-auto" alt="logo" />
+            <img src="/gauge-logo-dark.png" className="w-20 mx-auto" alt="logo" />
             <p className="text-sm text-gray-600 mt-2">
               Fill out the form to get started
             </p>

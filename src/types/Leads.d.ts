@@ -13,20 +13,21 @@
 //   closedAt?: FirebaseFirestore.Timestamp;
 // }
 
-export interface LeadForm {
+ interface LeadForm {
   companyName: string;
   industry: string;
   contactFullName: string;
   contactRole: string;
   contactEmail: string;
   contactPhone: string;
-  associateCode?: string;
+  referralCode?: string;
 }
 
-export type LeadStatus = "new" | "converted";
-export type DealStatus = "pending" | "closed" | "rejected";
+ type LeadStatus = "new" | "converted";
+type DealStatus = "pending" | "closed" | "rejected";
 
-export interface Lead {
+interface Lead {
+  id?:string
   // Associate Information
   associateId: string;
   associateCode: string;

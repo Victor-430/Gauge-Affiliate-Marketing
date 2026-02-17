@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { auth } from "@/config/FirebaseConfig";
-import { useAuthActiviation } from "@/hooks/useAuthActivation";
+import { useAuthActiviation } from "@/hooks/useAuthActivation"; 
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";

@@ -1,4 +1,4 @@
-export interface Associate {
+ interface Associate {
   email: string;
   fullName: string;
   phone: number;
