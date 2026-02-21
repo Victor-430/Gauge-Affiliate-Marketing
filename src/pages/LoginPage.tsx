@@ -141,7 +141,7 @@ export const LoginPage = () => {
           className="flex items-center
           justify-center"
         >
-          <img src="/gauge-logo.png" alt="logo" className="w-20" />
+          <img src="/gauge-logo-dark.png" alt="logo" className="w-20" />
         </div>
         <h1 className="text-xl font-medium mb-8">Login</h1>
 

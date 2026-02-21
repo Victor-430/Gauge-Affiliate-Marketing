@@ -46,7 +46,7 @@ const handleEmailResend = async() => {
   return (
     <div className="py-16">
         <Card className="w-3/4 mx-auto px-8 text-center font-sans py-8 pb-16 font-medium max-h-min">
-            <img src="/gauge-logo.png" alt="logo " className=" w-30" />
+            <img src="/gauge-logo-dark.png" alt="logo " className=" w-30" />
                <p className="text-gray-600 text-2xl font-semibold mb-6">
             We've sent a verification email to <strong>{email}</strong>
           </p>

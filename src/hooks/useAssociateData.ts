@@ -15,12 +15,12 @@ export const useAssociateData = () => {
   const { user } = useAuth();
   const [associate, setAssociate] = useState<Associate | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
-      setLoading(false);
+      setIsLoading(false);
       return;
     }
 
@@ -29,6 +29,7 @@ export const useAssociateData = () => {
         const associateDoc = await getDoc(doc(db, "associates", user.uid));
 
         if (associateDoc.exists()) {
+          setIsLoading(true)
           setAssociate(associateDoc.data() as Associate);
         } else {
           setError("Associate profile not found");
@@ -36,6 +37,8 @@ export const useAssociateData = () => {
       } catch (error) {
         console.error("Error fetching associate data", error);
         setError("Failed to load profile data");
+      }finally{
+        setIsLoading(false)
       }
     };
 
@@ -54,12 +57,12 @@ export const useAssociateData = () => {
         })) as Lead[];
 
         setLeads(leadsData);
-        setLoading(false);
+        setIsLoading(false);
       },
       (err) => {
         console.error("Error fetching leads", err);
         setError("Failed to load leads");
-        setLoading(false);
+        setIsLoading(false);
       },
     );
 
@@ -68,5 +71,5 @@ export const useAssociateData = () => {
     return () => unsubscribe()
   }, [user]);
 
-  return {associate, leads, loading, error}
+  return {associate, leads, isLoading, error}
 };

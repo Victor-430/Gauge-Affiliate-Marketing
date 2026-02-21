@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 export const SignupPage = () => {
   const navigate = useNavigate();
@@ -21,6 +22,11 @@ export const SignupPage = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [isView, setIsView] = useState(false)
+
+  const handleViewPassword = () => {
+    setIsView(!isView)
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -190,12 +196,13 @@ export const SignupPage = () => {
               />
             </div>
 
-            <div>
+            <div className="relative">
               <Label className="text-sm font-medium text-gray-700 mb-2">
                 Password
               </Label>
-              <Input
-                type="password"
+             
+                <Input
+                type={isView ? "text":"password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
@@ -203,6 +210,11 @@ export const SignupPage = () => {
                 className="w-full px-4 py-6"
                 placeholder="Min. 6 characters"
               />
+             { isView ? <Eye className="absolute right-4 top-11  w-5 h-5" onClick={handleViewPassword}/> : 
+             
+                <EyeOff  className=" absolute top-11  right-4 w-5 h-5" onClick={handleViewPassword}/>
+             }
+              
             </div>
 
             <Button
