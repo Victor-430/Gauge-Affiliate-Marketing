@@ -15,30 +15,54 @@ export const useAssociateData = () => {
   const { user } = useAuth();
   const [associate, setAssociate] = useState<Associate | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setIsLoading(true)
+    setError(null)
+    setAssociate(null)
+    setLeads([])
+
     if (!user) {
       setIsLoading(false);
       return;
     }
+
+
+let associateFetched = false
+let leadsInitialized = false
+  let associateError: string | null = null;
+    let leadsError: string | null = null;
+
+// show error only when both operations are complete
+const checkComplete = () =>{
+  if(associateFetched && leadsInitialized) {
+    if(associateError){
+      setError(associateError)
+    }else if (leadsError){
+      setError(leadsError)
+    }
+
+    setIsLoading(false)
+  }
+}
 
     const fetchAssociateData = async () => {
       try {
         const associateDoc = await getDoc(doc(db, "associates", user.uid));
 
         if (associateDoc.exists()) {
-          setIsLoading(true)
           setAssociate(associateDoc.data() as Associate);
         } else {
-          setError("Associate profile not found");
+         associateError ="Associate profile not found"
         }
       } catch (error) {
         console.error("Error fetching associate data", error);
-        setError("Failed to load profile data");
+        associateError = "Failed to load profile data"
       }finally{
-        setIsLoading(false)
+        associateFetched = true
+        checkComplete()
       }
     };
 
@@ -57,12 +81,14 @@ export const useAssociateData = () => {
         })) as Lead[];
 
         setLeads(leadsData);
-        setIsLoading(false);
+       leadsInitialized = true
+       checkComplete()
       },
       (err) => {
         console.error("Error fetching leads", err);
-        setError("Failed to load leads");
-        setIsLoading(false);
+        leadsError = "Failed to load leads"
+         leadsInitialized = true
+       checkComplete()
       },
     );
 

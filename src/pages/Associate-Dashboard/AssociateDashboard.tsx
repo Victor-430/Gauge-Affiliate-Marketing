@@ -51,14 +51,14 @@ export default function AssociateDashboard() {
   const { associate, leads, isLoading, error } = useAssociateData();
   const navigate = useNavigate();
 
-  const formatDate = (timestamp) => {
+  const formatDate = (timestamp: FirestoreTimestamp) => {
     if (!timestamp) return "__";
 
     try {
       const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
       return formatDistanceToNow(date, { addSuffix: true });
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       return "__";
     }
   };

@@ -1,17 +1,4 @@
-// export interface Lead {
-//   associateId: string;
-//   associateCode: string;
-//   clientName: string;
-//   clientEmail: string;
-//   clientPhone: string;
-//   status: LeadStatus;
-//   service?: string;
-//   notes?: string;
-//   submittedAt: FirebaseFirestore.Timestamp;
-//   updatedAt: FirebaseFirestore.Timestamp;
-//   convertedAt?: FirebaseFirestore.Timestamp;
-//   closedAt?: FirebaseFirestore.Timestamp;
-// }
+
 
  interface LeadForm {
   companyName: string;
@@ -25,6 +12,7 @@
 
  type LeadStatus = "new" | "converted";
 type DealStatus = "pending" | "closed" | "rejected";
+type FirestoreTimestamp = Timestamp | Date | string | null | undefined;
 
 interface Lead {
   id?:string
@@ -49,12 +37,12 @@ interface Lead {
   dealStatus: DealStatus | null;
 
   // Timestamps
-  submittedAt: FirebaseFirestore.Timestamp;
-  convertedAt?: FirebaseFirestore.Timestamp;
-  dealClosedAt?: FirebaseFirestore.Timestamp;
+  submittedAt: Timestamp;
+  convertedAt?: Timestamp;
+  dealClosedAt?: Timestamp;
 
   // Admin Actions
   adminNotes?: string;
   proposalSent?: boolean;
-  proposalSentAt?: FirebaseFirestore.Timestamp;
+  proposalSentAt?: Timestamp;
 }
