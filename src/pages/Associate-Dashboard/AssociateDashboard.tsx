@@ -1,18 +1,17 @@
-import { Users, ArrowUpRight, Clock, CheckCircle2, XCircle, SendHorizontal } from "lucide-react";
+import { Users, ArrowUpRight, Clock, CheckCircle2, XCircle, SendHorizontal, Loader2, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DashboardLayout } from "./components/DashboardLayout";
 import { mockAssociate, mockLeads } from "@/data/mockData";
+import { useAssociateData } from "@/hooks/useAssociateData";
+import { useNavigate } from "react-router";
+import {formatDistanceToNow} from "date-fns"
+import { toast } from "sonner";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-const statCards = [
-  { label: "Total Leads", value: mockAssociate.stats.totalLeads, icon: Users },
-  { label: "Converted", value: mockAssociate.stats.convertedLeads, icon: ArrowUpRight },
-  { label: "Pending Deals", value: mockAssociate.stats.pendingDeals, icon: Clock },
-  { label: "Closed Deals", value: mockAssociate.stats.closedDeals, icon: CheckCircle2 },
-  { label: "Rejected", value: mockAssociate.stats.rejectedDeals, icon: XCircle },
-];
+
 
 function LeadStatusBadge({ status }: { status: string }) {
   return (
@@ -36,6 +35,66 @@ function DealStatusBadge({ status }: { status: string | null }) {
 }
 
 export default function AssociateDashboard() {
+  const {associate, leads, loading,error} = useAssociateData()
+  const navigate = useNavigate()
+
+  const formatDate = (timestamp) => {
+    if(!timestamp) return "__"
+
+    try{
+      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp)
+      return formatDistanceToNow(date, {addSuffix:true})
+    }catch(error){
+      console.error(error)
+      return "__"
+    }
+  }
+
+  const handleSubmitLead = () => {
+    navigate(`/submit-lead?ref=${associate?.uniqueCode}`)
+  }
+
+
+  const handleCopyLink = () => {
+    if (associate?.affiliateLink) {
+      navigator.clipboard.writeText(associate.affiliateLink)
+      toast("Affiliate link was copied", {position:"top-right"})
+    }
+  }
+
+  if(loading) {
+    return(
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400"/>
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  if (error || !associate){
+    return (
+      <DashboardLayout>
+        <div className="max-w-2xl mx-auto mt-8">
+           <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              {error || "Failed to load dashboard data. Please try again."}
+            </AlertDescription>
+          </Alert>
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  const statCards = [
+  { label: "Total Leads", value: associate.stats.totalLeads, icon: Users },
+  { label: "Converted", value: associate.stats.convertedLeads, icon: ArrowUpRight },
+  { label: "Pending Deals", value: associate.stats.pendingDeals, icon: Clock },
+  { label: "Closed Deals", value: associate.stats.closedDeals, icon: CheckCircle2 },
+  { label: "Rejected", value: associate.stats.rejectedDeals, icon: XCircle },
+];
+
   return (
     <DashboardLayout>
       <div className="max-w-6xl mx-auto space-y-8">
