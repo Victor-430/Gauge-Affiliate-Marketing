@@ -34,14 +34,14 @@ export const useAssociateData = () => {
           setError("Associate profile not found");
         }
       } catch (error) {
-        console.error("Error fetching aassociate data", error);
+        console.error("Error fetching associate data", error);
         setError("Failed to load profile data");
       }
     };
 
     const leadQuery = query(
       collection(db, "leads"),
-      where("associateIId", "==", user.uid),
+      where("associateId", "==", user.uid),
       orderBy("submittedAt", "desc"),
     );
 
