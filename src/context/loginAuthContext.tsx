@@ -22,7 +22,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const authState = onAuthStateChanged(auth, async (firebaseUser) => {
-      setLoading(true);
       
       if (firebaseUser) {
         setUser(firebaseUser);
