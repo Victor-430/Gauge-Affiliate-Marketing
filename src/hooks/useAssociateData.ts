@@ -4,9 +4,12 @@ import {
   collection,
   doc,
   getDoc,
+  increment,
   onSnapshot,
   orderBy,
   query,
+  Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -101,5 +104,50 @@ export const useAssociateData = () => {
     return () => unsubscribe();
   }, [user, authLoading]);
 
-  return { associate, leads, isLoading, error };
+  const convertLead = async (leadId: string) => {
+    if (!user) throw new Error("User not authenticated");
+
+    try {
+      const leadRef = doc(db, "leads", leadId);
+
+      await updateDoc(leadRef, {
+        leadStatus: "converted",
+        convertedAt: Timestamp.now(),
+      });
+
+      const associateRef = doc(db, "associates", user.uid);
+      await updateDoc(associateRef, {
+        "stats.convertedLeads": increment(1),
+      });
+
+      return { success: true };
+    } catch (err) {
+      console.error("Error converting lead:", err);
+      throw new Error("Failed to convert lead");
+    }
+  };
+
+  const undoConvertedLead = async (leadId: string) => {
+    if (!user) throw new Error("User not authenticated");
+
+    try {
+      const leadRef = doc(db, "leads", leadId);
+      await updateDoc(leadRef, {
+        leadStatus: "new",
+        convertedAt: null,
+      });
+
+      const associateRef = doc(db, "associates", user.uid);
+
+      await updateDoc(associateRef, {
+        "stats.convertedLeads": increment(-1),
+      });
+
+      return { success: true };
+    } catch (err) {
+      console.error("Error undoing lead conversion", err);
+      throw new Error("Failed to undo lead conversion");
+    }
+  };
+  return { associate, leads, isLoading, error, convertLead, undoConvertedLead };
 };
