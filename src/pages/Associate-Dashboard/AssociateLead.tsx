@@ -47,6 +47,8 @@ function LeadDetailRow({ icon: Icon, label, value }: { icon: React.ElementType; 
 export default function AssociateLeads() {
   const [leads, setLeads] = useState<Lead[]>(mockLeads);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+const [converting, setConverting] = useState(false)
+
 
   const canConvert = (lead: Lead) => {
     return lead.leadStatus === "new" && lead.dealStatus !== "closed" && lead.dealStatus !== "rejected";

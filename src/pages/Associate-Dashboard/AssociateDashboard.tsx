@@ -22,9 +22,9 @@ import {
 import { DashboardLayout } from "./components/DashboardLayout";
 import { useAssociateData } from "@/hooks/useAssociateData";
 import { useNavigate } from "react-router";
-import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { formatDate } from "@/utils/FormatDate";
 
 function LeadStatusBadge({ status }: { status: string }) {
   return (
@@ -51,17 +51,6 @@ export default function AssociateDashboard() {
   const { associate, leads, isLoading, error } = useAssociateData();
   const navigate = useNavigate();
 
-  const formatDate = (timestamp: FirestoreTimestamp) => {
-    if (!timestamp) return "__";
-
-    try {
-      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-      return formatDistanceToNow(date, { addSuffix: true });
-    } catch (err) {
-      console.error(err);
-      return "__";
-    }
-  };
 
   const handleSubmitLead = () => {
     navigate(`/submit-lead?ref=${associate?.uniqueCode}`);
