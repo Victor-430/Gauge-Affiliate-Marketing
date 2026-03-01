@@ -1,16 +1,47 @@
 import { useState } from "react";
-import { MoreVertical, ArrowUpRight, Undo2, Building2, User, Mail, Phone, Briefcase, Calendar, Loader2, AlertCircle } from "lucide-react";
+import {
+  MoreVertical,
+  ArrowUpRight,
+  Undo2,
+  Building2,
+  User,
+  Mail,
+  Phone,
+  Briefcase,
+  Calendar,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { DashboardLayout } from "./components/DashboardLayout"; 
+import { DashboardLayout } from "./components/DashboardLayout";
 import { toast } from "sonner";
 import { useAssociateData } from "@/hooks/useAssociateData";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { formatDate, formatFullDate } from "@/utils/FormatDate";
 
 function LeadStatusBadge({ status }: { status: string }) {
   return (
@@ -33,7 +64,15 @@ function DealStatusBadge({ status }: { status: string | null }) {
   return <Badge className={styles[status] || ""}>{status}</Badge>;
 }
 
-function LeadDetailRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
+function LeadDetailRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: string;
+}) {
   return (
     <div className="flex items-start gap-3">
       <Icon className="h-4 w-4 mt-0.5 text-muted-foreground" />
@@ -46,20 +85,29 @@ function LeadDetailRow({ icon: Icon, label, value }: { icon: React.ElementType; 
 }
 
 export default function AssociateLeads() {
-const { leads, loading, error, convertLead, undoConvertLead } = useAssociateData();  
-const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-const [converting, setConverting] = useState(false)
-
+  const {
+    leads,
+    isLoading: loading,
+    error,
+    convertLead,
+    undoConvertedLead,
+  } = useAssociateData();
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [converting, setConverting] = useState(false);
 
   const canConvert = (lead: Lead) => {
-    return lead?.leadStatus === "new" && lead?.dealStatus !== "closed" && lead?.dealStatus !== "rejected";
+    return (
+      lead?.leadStatus === "new" &&
+      lead?.dealStatus !== "closed" &&
+      lead?.dealStatus !== "rejected"
+    );
   };
 
   const canUndo = (lead: Lead) => {
     if (lead?.leadStatus !== "converted" || !lead?.convertedAt) return false;
-    if (lead?.dealStatus === "closed" || lead?.dealStatus === "rejected") return false;
-    
-    
+    if (lead?.dealStatus === "closed" || lead?.dealStatus === "rejected")
+      return false;
+
     const convertedTime = new Date(lead.convertedAt).getTime();
     const now = Date.now();
     return now - convertedTime < 30 * 60 * 1000; // 30 minutes
@@ -69,18 +117,21 @@ const [converting, setConverting] = useState(false)
     const lead = leads.find((l) => l.id === leadId);
     if (lead && !canConvert(lead)) {
       toast.error("Cannot convert: deal is closed or rejected", {
-        position: "top-right"});
+        position: "top-right",
+      });
       return;
     }
 
-
-     setConverting(true);
+    setConverting(true);
     try {
       await convertLead(leadId);
       setSelectedLead(null);
-      toast.success("Lead marked as converted. You can undo within 30 minutes.", {
-        position: "top-right",
-      });
+      toast.success(
+        "Lead marked as converted. You can undo within 30 minutes.",
+        {
+          position: "top-right",
+        },
+      );
     } catch (err) {
       toast.error("Failed to convert lead. Please try again.", {
         position: "top-right",
@@ -88,8 +139,6 @@ const [converting, setConverting] = useState(false)
     } finally {
       setConverting(false);
     }
-
-  
   };
 
   const handleUndo = async (leadId: string) => {
@@ -99,9 +148,9 @@ const [converting, setConverting] = useState(false)
       return;
     }
 
-   setConverting(true);
+    setConverting(true);
     try {
-      await undoConvertLead(leadId);
+      await undoConvertedLead(leadId);
       setSelectedLead(null);
       toast.success("Lead reverted to new", {
         position: "top-right",
@@ -114,7 +163,6 @@ const [converting, setConverting] = useState(false)
       setConverting(false);
     }
   };
-
 
   if (loading) {
     return (
@@ -145,82 +193,123 @@ const [converting, setConverting] = useState(false)
     <DashboardLayout>
       <div className="max-w-6xl mx-auto space-y-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">My Leads</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            My Leads
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            View and manage all your submitted leads. Convert leads after successful follow-up.
+            View and manage all your submitted leads. Convert leads after
+            successful follow up.
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">All Leads</CardTitle>
+            <CardTitle className="text-lg font-semibold">
+              All Leads ({leads.length})
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Company</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Industry</TableHead>
-                  <TableHead>Lead Status</TableHead>
-                  <TableHead>Deal Status</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {leads.map((lead) => (
-                  <TableRow key={lead.id}>
-                    <TableCell className="font-medium">{lead.companyName}</TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="text-sm">{lead.contactFullName}</p>
-                        <p className="text-xs text-muted-foreground">{lead.contactRole}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">{lead.industry}</TableCell>
-                    <TableCell><LeadStatusBadge status={lead.leadStatus} /></TableCell>
-                    <TableCell><DealStatusBadge status={lead.dealStatus} /></TableCell>
-                    <TableCell className="text-muted-foreground text-sm">{lead.submittedAt}</TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => setSelectedLead(lead)}>
-                            View Details
-                          </DropdownMenuItem>
-                          {canConvert(lead) && (
-                            <DropdownMenuItem onClick={() => handleConvert(lead.id)}>
-                              <ArrowUpRight className="h-4 w-4 mr-2" />
-                              Convert
-                            </DropdownMenuItem>
-                          )}
-                          {canUndo(lead) && (
-                            <DropdownMenuItem onClick={() => handleUndo(lead.id)}>
-                              <Undo2 className="h-4 w-4 mr-2" />
-                              Undo Convert
-                            </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+            {leads.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <Building2 className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                <p className="text-lg font-medium mb-2">No leads yet</p>
+                <p className="text-sm">Leads you submit will appear here</p>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Company</TableHead>
+                    <TableHead>Contact</TableHead>
+                    <TableHead>Industry</TableHead>
+                    <TableHead>Lead Status</TableHead>
+                    <TableHead>Deal Status</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead className="text-right">Action</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {leads.map((lead) => (
+                    <TableRow key={lead.id}>
+                      <TableCell className="font-medium">
+                        {lead?.companyName}
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="text-sm">{lead?.contactFullName}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {lead?.contactRole}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {lead?.industry}
+                      </TableCell>
+                      <TableCell>
+                        <LeadStatusBadge status={lead?.leadStatus} />
+                      </TableCell>
+                      <TableCell>
+                        <DealStatusBadge status={lead?.dealStatus} />
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-sm">
+                        {formatDate({lead?.submittedAt})} 
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => setSelectedLead(lead)}
+                            >
+                              View Details
+                            </DropdownMenuItem>
+                            {canConvert(lead) && (
+                              <DropdownMenuItem
+                                onClick={() => handleConvert(lead?.id)}
+                                disabled={converting}
+                              >
+                                <ArrowUpRight className="h-4 w-4 mr-2" />
+                                Convert
+                              </DropdownMenuItem>
+                            )}
+                            {canUndo(lead) && (
+                              <DropdownMenuItem
+                                onClick={() => handleUndo(lead?.id)}
+                              >
+                                <Undo2 className="h-4 w-4 mr-2" />
+                                Undo Convert
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </CardContent>
         </Card>
 
         {/* Lead Detail Modal */}
-        <Dialog open={!!selectedLead} onOpenChange={(open) => !open && setSelectedLead(null)}>
+        <Dialog
+          open={!!selectedLead}
+          onOpenChange={(open) => !open && setSelectedLead(null)}
+        >
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>{selectedLead?.companyName}</DialogTitle>
-              <DialogDescription>Full lead details and actions</DialogDescription>
+              <DialogDescription>
+                Full lead details and actions
+              </DialogDescription>
             </DialogHeader>
 
             {selectedLead && (
@@ -233,14 +322,42 @@ const [converting, setConverting] = useState(false)
                 <Separator />
 
                 <div className="grid gap-4">
-                  <LeadDetailRow icon={Building2} label="Industry" value={selectedLead.industry} />
-                  <LeadDetailRow icon={User} label="Contact Name" value={selectedLead.contactFullName} />
-                  <LeadDetailRow icon={Briefcase} label="Role" value={selectedLead.contactRole} />
-                  <LeadDetailRow icon={Mail} label="Email" value={selectedLead.contactEmail} />
-                  <LeadDetailRow icon={Phone} label="Phone" value={selectedLead.contactPhone} />
-                  <LeadDetailRow icon={Calendar} label="Submitted" value={selectedLead.submittedAt} />
+                  <LeadDetailRow
+                    icon={Building2}
+                    label="Industry"
+                    value={selectedLead.industry}
+                  />
+                  <LeadDetailRow
+                    icon={User}
+                    label="Contact Name"
+                    value={selectedLead.contactFullName}
+                  />
+                  <LeadDetailRow
+                    icon={Briefcase}
+                    label="Role"
+                    value={selectedLead.contactRole}
+                  />
+                  <LeadDetailRow
+                    icon={Mail}
+                    label="Email"
+                    value={selectedLead.contactEmail}
+                  />
+                  <LeadDetailRow
+                    icon={Phone}
+                    label="Phone"
+                    value={selectedLead.contactPhone}
+                  />
+                  <LeadDetailRow
+                    icon={Calendar}
+                    label="Submitted"
+                    value={formatFullDate(selectedLead.submittedAt)}
+                  />
                   {selectedLead.convertedAt && (
-                    <LeadDetailRow icon={Calendar} label="Converted" value={selectedLead.convertedAt} />
+                    <LeadDetailRow
+                      icon={Calendar}
+                      label="Converted"
+                      value={ formatFullDate(selectedLead.convertedAt) }
+                    />
                   )}
                 </div>
 
@@ -248,15 +365,41 @@ const [converting, setConverting] = useState(false)
 
                 <div className="flex justify-end gap-2">
                   {canConvert(selectedLead) && (
-                    <Button onClick={() => handleConvert(selectedLead.id)} className="gap-1.5">
-                      <ArrowUpRight className="h-4 w-4" />
-                      Convert Lead
+                    <Button
+                      onClick={() => handleConvert(selectedLead.id)}
+                      disabled={converting}
+                      className="gap-1.5"
+                    >
+                      {converting ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Converting...
+                        </>
+                      ) : (
+                        <>
+                          <ArrowUpRight className="h-4 w-4" />
+                          Convert Lead
+                        </>
+                      )}
                     </Button>
                   )}
                   {canUndo(selectedLead) && (
-                    <Button variant="outline" onClick={() => handleUndo(selectedLead.id)} className="gap-1.5">
-                      <Undo2 className="h-4 w-4" />
-                      Undo Convert
+                    <Button
+                      variant="outline"
+                      onClick={() => handleUndo(selectedLead.id)}
+                      className="gap-1.5"
+                    >
+                      {converting ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Undoing...
+                        </>
+                      ) : (
+                        <>
+                          <Undo2 className="h-4 w-4" />
+                          Undo Convert
+                        </>
+                      )}
                     </Button>
                   )}
                 </div>
