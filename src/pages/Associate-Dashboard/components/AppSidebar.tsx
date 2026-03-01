@@ -20,7 +20,7 @@ const navItems = [
     active: true,
   },
   { title: "Leads", url: "/associate/leads", icon: Users, active: true },
-  { title: "Submit Lead", url: "#", icon: SendHorizontal, active: true },
+  { title: "Submit Lead", url: "/leads", icon: SendHorizontal, active: true },
 ];
 
 export function AppSidebar() {
