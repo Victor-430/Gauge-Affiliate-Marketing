@@ -15,7 +15,7 @@ type DealStatus = "pending" | "closed" | "rejected";
 type FirestoreTimestamp = Timestamp | Date | string | null | undefined;
 
 interface Lead {
-  id?:string
+  id:string
   // Associate Information
   associateId: string;
   associateCode: string;

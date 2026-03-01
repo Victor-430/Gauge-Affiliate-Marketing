@@ -252,7 +252,7 @@ export default function AssociateLeads() {
                         <DealStatusBadge status={lead?.dealStatus} />
                       </TableCell>
                       <TableCell className="text-muted-foreground text-sm">
-                        {formatDate({lead?.submittedAt})} 
+                        {formatDate(lead?.submittedAt)} 
                       </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
