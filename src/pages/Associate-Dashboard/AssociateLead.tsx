@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MoreVertical, ArrowUpRight, Undo2, Building2, User, Mail, Phone, Briefcase, Calendar } from "lucide-react";
+import { MoreVertical, ArrowUpRight, Undo2, Building2, User, Mail, Phone, Briefcase, Calendar, Loader2, AlertCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,8 +8,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { DashboardLayout } from "./components/DashboardLayout"; 
-import { mockLeads, type Lead } from "@/data/mockData";
 import { toast } from "sonner";
+import { useAssociateData } from "@/hooks/useAssociateData";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 function LeadStatusBadge({ status }: { status: string }) {
   return (
@@ -45,56 +46,100 @@ function LeadDetailRow({ icon: Icon, label, value }: { icon: React.ElementType; 
 }
 
 export default function AssociateLeads() {
-  const [leads, setLeads] = useState<Lead[]>(mockLeads);
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+const { leads, loading, error, convertLead, undoConvertLead } = useAssociateData();  
+const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 const [converting, setConverting] = useState(false)
 
 
   const canConvert = (lead: Lead) => {
-    return lead.leadStatus === "new" && lead.dealStatus !== "closed" && lead.dealStatus !== "rejected";
+    return lead?.leadStatus === "new" && lead?.dealStatus !== "closed" && lead?.dealStatus !== "rejected";
   };
 
   const canUndo = (lead: Lead) => {
-    if (lead.leadStatus !== "converted" || !lead.convertedAt) return false;
-    if (lead.dealStatus === "closed" || lead.dealStatus === "rejected") return false;
+    if (lead?.leadStatus !== "converted" || !lead?.convertedAt) return false;
+    if (lead?.dealStatus === "closed" || lead?.dealStatus === "rejected") return false;
+    
+    
     const convertedTime = new Date(lead.convertedAt).getTime();
     const now = Date.now();
     return now - convertedTime < 30 * 60 * 1000; // 30 minutes
   };
 
-  const handleConvert = (leadId: string) => {
+  const handleConvert = async (leadId: string) => {
     const lead = leads.find((l) => l.id === leadId);
     if (lead && !canConvert(lead)) {
-      toast.error("Cannot convert: deal is closed or rejected");
+      toast.error("Cannot convert: deal is closed or rejected", {
+        position: "top-right"});
       return;
     }
-    setLeads((prev) =>
-      prev.map((lead) =>
-        lead.id === leadId
-          ? { ...lead, leadStatus: "converted" as const, convertedAt: new Date().toISOString() }
-          : lead
-      )
-    );
-    setSelectedLead(null);
-    toast.success("Lead marked as converted. You can undo within 30 minutes.");
+
+
+     setConverting(true);
+    try {
+      await convertLead(leadId);
+      setSelectedLead(null);
+      toast.success("Lead marked as converted. You can undo within 30 minutes.", {
+        position: "top-right",
+      });
+    } catch (err) {
+      toast.error("Failed to convert lead. Please try again.", {
+        position: "top-right",
+      });
+    } finally {
+      setConverting(false);
+    }
+
+  
   };
 
-  const handleUndo = (leadId: string) => {
+  const handleUndo = async (leadId: string) => {
     const lead = leads.find((l) => l.id === leadId);
     if (lead && !canUndo(lead)) {
       toast.error("Undo window has expired (30 minutes)");
       return;
     }
-    setLeads((prev) =>
-      prev.map((lead) =>
-        lead.id === leadId
-          ? { ...lead, leadStatus: "new" as const, convertedAt: undefined }
-          : lead
-      )
-    );
-    setSelectedLead(null);
-    toast.success("Lead reverted to new");
+
+   setConverting(true);
+    try {
+      await undoConvertLead(leadId);
+      setSelectedLead(null);
+      toast.success("Lead reverted to new", {
+        position: "top-right",
+      });
+    } catch (err) {
+      toast.error("Failed to undo conversion. Please try again.", {
+        position: "top-right",
+      });
+    } finally {
+      setConverting(false);
+    }
   };
+
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="max-w-2xl mx-auto mt-8">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              {error || "Failed to load leads. Please try again."}
+            </AlertDescription>
+          </Alert>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
