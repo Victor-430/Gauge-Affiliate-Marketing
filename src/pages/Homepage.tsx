@@ -1,11 +1,9 @@
 import { LoginPage } from "./LoginPage";
 
-const HomePage = () => {
+export const HomePage = () => {
   return (
     <div>
       <LoginPage />
     </div>
   );
 };
-
-export default HomePage;
