@@ -1,13 +1,9 @@
-import { Footer } from "@/components/layout/Footer"
-import { Header } from "@/components/layout/Header"
+import { LoginPage } from "./LoginPage";
 
 export const HomePage = () => {
   return (
-    <div >
-            <Header />
-            <Footer />
-       
+    <div>
+      <LoginPage />
     </div>
-  )
-}
-
+  );
+};

@@ -29,7 +29,7 @@ export const VerificationPage = () => {
   }, []);
 
   const handleLogin = () => {
-    navigate("/login");
+    navigate("/");
   };
 
     const handleRefresh = async () => {

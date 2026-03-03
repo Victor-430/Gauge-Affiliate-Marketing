@@ -20,7 +20,7 @@ export const ProtectedRoutes = ({ children, allowedRoles }: ProtectedRouteProps)
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   if (role && !allowedRoles) {

@@ -7,7 +7,6 @@ import { HomePage } from "@/pages/HomePage";
 import { SendVerificationPage } from "@/pages/SendVerificationPage";
 import { VerificationPage } from "@/pages/VerificationPage";
 import { ReferralPage } from "@/pages/ReferralPage";
-import { LoginPage } from "@/pages/LoginPage";
 import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
 // import {  ProtectedRoutes } from "@/middleware/ProtectedRoutes";
 import { AdminDashboard } from "@/pages/dashboard/AdminDashboard";
@@ -41,7 +40,6 @@ export const router = createBrowserRouter([
         path: "/sales",
         Component: ReferralPage,
       },
-      // { path: "/login", Component: LoginPage },
     ],
   },
 
@@ -71,7 +69,7 @@ export const router = createBrowserRouter([
 {path:"/admin/dashboard",
   Component:AdminDashboard
 },
-  { path: "/login", Component: LoginPage },
+  // { path: "/login", Component: LoginPage },
   { path: "/unauthorized", Component: UnauthorizedPage },
 
   { path: "*", Component: NotFoundPage },

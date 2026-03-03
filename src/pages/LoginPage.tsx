@@ -119,9 +119,9 @@ export const LoginPage = () => {
     }
   };
 
-  const handleHomeButton = () => {
-    navigate("/", { replace: true });
-  };
+  // const handleHomeButton = () => {
+  //   navigate("/", { replace: true });
+  // };
 
   const handlePasswordView = () => {
     setIsView(!isView);
@@ -129,13 +129,13 @@ export const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 relative  py-16">
-      <Button
+      {/* <Button
         onClick={handleHomeButton}
         className="absolute top-4 left-4 mt-4 ml-4"
       >
         {" "}
         <HomeIcon className="mr-2 h-4 w-4" /> Home
-      </Button>
+      </Button> */}
       <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-lg">
         <div
           className="flex items-center
