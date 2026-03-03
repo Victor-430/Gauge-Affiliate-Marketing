@@ -91,7 +91,7 @@ export const useAssociateData = () => {
         leadsInitialized = true;
         checkComplete();
       },
-      (err) => {
+      () => {
         // console.error("Error fetching leads", err);
         leadsError = "Failed to load leads";
         leadsInitialized = true;
