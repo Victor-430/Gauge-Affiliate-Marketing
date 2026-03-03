@@ -30,7 +30,7 @@ const handleEmailResend = async() => {
       });
       toast.success("Verification Email Resent", { position: "top-right" });
     } catch (error) {
-      console.error("Error resending email:", error);
+      // console.error("Error resending email:", error);
       toast.error("Failed to resend email. Please try again.", {
         position: "top-right",
       });

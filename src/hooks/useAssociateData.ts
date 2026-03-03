@@ -65,7 +65,7 @@ export const useAssociateData = () => {
           associateError = "Associate profile not found";
         }
       } catch (error) {
-        console.error("Error fetching associate data", error);
+        // console.error("Error fetching associate data", error);
         associateError = "Failed to load profile data";
       } finally {
         associateFetched = true;
@@ -92,7 +92,7 @@ export const useAssociateData = () => {
         checkComplete();
       },
       (err) => {
-        console.error("Error fetching leads", err);
+        // console.error("Error fetching leads", err);
         leadsError = "Failed to load leads";
         leadsInitialized = true;
         checkComplete();
@@ -122,7 +122,7 @@ export const useAssociateData = () => {
 
       return { success: true };
     } catch (err) {
-      console.error("Error converting lead:", err);
+      // console.error("Error converting lead:", err);
       throw new Error("Failed to convert lead");
     }
   };
@@ -145,7 +145,7 @@ export const useAssociateData = () => {
 
       return { success: true };
     } catch (err) {
-      console.error("Error undoing lead conversion", err);
+      // console.error("Error undoing lead conversion", err);
       throw new Error("Failed to undo lead conversion");
     }
   };

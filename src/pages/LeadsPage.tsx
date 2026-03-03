@@ -46,15 +46,15 @@ export const LeadsPage = () => {
         setIsValidCode(true);
         toast.success("Valid referral code", { position: "top-right" });
       } else {
-        console.log("code ran 1");
+        // console.log("code ran 1");
         setIsValidCode(false);
         toast.error("Invalid referral code. Please check and try again", {
           position: "top-right",
         });
-        console.log("code ran 2");
+        // console.log("code ran 2");
       }
     } catch (error) {
-      console.error("Error verifying code:", error);
+      // console.error("Error verifying code:", error);
       toast.error("Failed to verify referral code", {
         position: "top-right",
       });
@@ -109,7 +109,7 @@ export const LeadsPage = () => {
     setIsLoading(true);
 
     try {
-      console.log("Submitting:", formData);
+      // console.log("Submitting:", formData);
 
       const res = await fetch(`${API_URL}/api/leads/submit`, {
         method: "POST",
@@ -151,9 +151,9 @@ export const LeadsPage = () => {
       });
       setIsValidCode(false);
       hasVerifiedUrlCode.current = false;
-      console.log("Form Submitted")
+      // console.log("Form Submitted")
     } catch (error) {
-      console.error("Submit error:", error);
+      // console.error("Submit error:", error);
       toast.error("Failed to submit lead", {
         position: "top-right",
       });

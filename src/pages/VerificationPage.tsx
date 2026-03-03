@@ -33,14 +33,14 @@ export const VerificationPage = () => {
   };
 
     const handleRefresh = async () => {
-       console.log("Refresh button clicked");
+      //  console.log("Refresh button clicked");
     setIsRefreshing(true);
     const user = auth.currentUser;
     if (user) {
-       console.log("Email verified before reload:", user.emailVerified);
+      //  console.log("Email verified before reload:", user.emailVerified);
       await user.reload();
       setIsVerified(user.emailVerified);
-       console.log("Email verified after reload:", user.emailVerified);
+      //  console.log("Email verified after reload:", user.emailVerified);
     }
     setIsRefreshing(false);
   };

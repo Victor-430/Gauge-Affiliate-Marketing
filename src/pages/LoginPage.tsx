@@ -79,7 +79,7 @@ export const LoginPage = () => {
         toast.error("Invalid user role", { position: "top-right" });
       }
     } catch (err) {
-      console.error("Login error:", err);
+      // console.error("Login error:", err);
 
       if (
         err instanceof Error &&

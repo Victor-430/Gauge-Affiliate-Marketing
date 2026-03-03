@@ -38,7 +38,7 @@ export const SignupPage = () => {
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    console.log("Creating User");
+    // console.log("Creating User");
 
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -87,7 +87,7 @@ export const SignupPage = () => {
 
       setFormData({ email: "", fullName: "", phone: "", password: "" });
     } catch (err) {
-      console.error(err);
+      // console.error(err);
       if (
         err instanceof Error &&
         "code" in err &&
@@ -138,7 +138,7 @@ export const SignupPage = () => {
       }
     } finally {
       setLoading(false);
-      console.log("=== SUBMISSION ENDED ===");
+      // console.log("=== SUBMISSION ENDED ===");
     }
   };
 
