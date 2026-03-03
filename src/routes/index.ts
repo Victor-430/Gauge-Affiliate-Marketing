@@ -3,7 +3,6 @@ import { SignupPage } from "@/pages/SignupPage";
 import { LeadsPage } from "@/pages/LeadsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { MainLayout } from "@/layouts/MainLayout";
-
 import { SendVerificationPage } from "@/pages/SendVerificationPage";
 import { VerificationPage } from "@/pages/VerificationPage";
 import { ReferralPage } from "@/pages/ReferralPage";
@@ -12,7 +11,7 @@ import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
 import { AdminDashboard } from "@/pages/dashboard/AdminDashboard";
 import AssociateDashboard from "@/pages/Associate-Dashboard/AssociateDashboard";
 import AssociateLeads from "@/pages/Associate-Dashboard/AssociateLead";
-import {HomePage} from "@/pages/HomePage";
+import {HomePage} from "@/pages/Home-Page";
 
 export const router = createBrowserRouter([
   {
