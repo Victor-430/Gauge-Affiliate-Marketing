@@ -1,5 +1,5 @@
 import { LayoutDashboard, Users, SendHorizontal, LogOut } from "lucide-react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import {
   Sidebar,
   SidebarContent,
@@ -11,6 +11,7 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/context/loginAuthContext";
 
 const navItems = [
   {
@@ -24,6 +25,14 @@ const navItems = [
 ];
 
 export function AppSidebar() {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    navigate("/");
+    logout();
+  };
+
   return (
     <Sidebar className="border-r-0 ">
       <SidebarHeader className="p-6 border-b border-gray-50 bg-black ">
@@ -59,7 +68,10 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="px-6 pb-10 pt-3 border-t border-sidebar-border bg-black">
-        <div className="flex cursor-pointer items-center gap-3">
+        <div
+          className="flex cursor-pointer items-center gap-3"
+          onClick={handleLogout}
+        >
           <LogOut className="text-white" />
           <p className="text-sm text-white   truncate">Logout</p>
         </div>
