@@ -13,6 +13,8 @@ import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 
+const CLIENT_URL = import.meta.env.VITE_CLIENT_URL 
+
 export const SignupPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<AssociateFormData>({
@@ -23,6 +25,8 @@ export const SignupPage = () => {
   });
   const [loading, setLoading] = useState(false);
   const [isView, setIsView] = useState(false)
+
+
 
   const handleViewPassword = () => {
     setIsView(!isView)
@@ -72,8 +76,8 @@ export const SignupPage = () => {
       });
 
       await sendEmailVerification(user, {
-        // url: "https://affiliate.gaugesolution/verify-success",
-        url: "http://localhost:5173/verify-success",
+        
+        url: `${CLIENT_URL}/verify-success`,
       });
 
       toast.success(

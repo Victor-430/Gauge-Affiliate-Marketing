@@ -111,7 +111,7 @@ export const LeadsPage = () => {
     try {
       // console.log("Submitting:", formData);
 
-      const res = await fetch(`${API_URL}/api/leads/submit`, {
+      const res = await fetch(`${API_URL}/leads/submit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

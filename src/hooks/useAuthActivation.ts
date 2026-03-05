@@ -15,7 +15,7 @@ export const useAuthActiviation = () => {
         try {
           const idToken = await getIdToken(user);
           // console.log(idToken);
-          const response = await fetch(`${API_URL}/api/activate-associate`, {
+          const response = await fetch(`${API_URL}/activate/associate`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -36,7 +36,6 @@ export const useAuthActiviation = () => {
             toast(data?.message, { position: "top-right" });
             // console.log("Account activated!", data);
             navigate("/login");
-            // pass data to associatePage
           }
         } catch (error) {
           // console.error("Error activating account:", error);

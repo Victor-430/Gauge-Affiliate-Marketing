@@ -1,20 +1,22 @@
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { auth } from "@/config/FirebaseConfig"
-import { sendEmailVerification } from "firebase/auth"
-import { useState } from "react"
-import { useLocation, useNavigate } from "react-router"
-import { toast } from "sonner"
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { auth } from "@/config/FirebaseConfig";
+import { sendEmailVerification } from "firebase/auth";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router";
+import { toast } from "sonner";
 
 export const SendVerificationPage = () => {
-const location = useLocation()
-const email = location?.state?.email
-const navigate = useNavigate()
-const [resending, setResending] = useState(false)
-const user = auth.currentUser
+  const location = useLocation();
+  const email = location?.state?.email;
+  const navigate = useNavigate();
+  const [resending, setResending] = useState(false);
+  const user = auth.currentUser;
 
-const handleEmailResend = async() => {
-  if (!user) {
+  const CLIENT_URL = import.meta.env.VITE_CLIENT_URL;
+
+  const handleEmailResend = async () => {
+    if (!user) {
       toast.error("User not found. Please sign up again.", {
         position: "top-right",
       });
@@ -22,11 +24,10 @@ const handleEmailResend = async() => {
       return;
     }
 
-    setResending(true)
-     try {
+    setResending(true);
+    try {
       await sendEmailVerification(user, {
-                // url: "https://affiliate.gaugesolution/verify-success",
-        url: "http://localhost:5173/verify-success",
+        url: `${CLIENT_URL}/verify-success`,
       });
       toast.success("Verification Email Resent", { position: "top-right" });
     } catch (error) {
@@ -38,23 +39,23 @@ const handleEmailResend = async() => {
       setResending(false);
     }
 
-     if (!email || !user) {
-    navigate("/signup");
-    return null;
-  }
+    if (!email || !user) {
+      navigate("/signup");
+      return null;
+    }
   };
   return (
     <div className="py-16">
-        <Card className="w-3/4 mx-auto px-8 text-center font-sans py-8 pb-16 font-medium max-h-min">
-            <img src="/gauge-logo-dark.png" alt="logo " className=" w-30" />
-               <p className="text-gray-600 text-2xl font-semibold mb-6">
-            We've sent a verification email to <strong>{email}</strong>
-          </p>
-          <p className="text-sm text-gray-500 mb-8">
-            Click the link in the email to activate your account.
-          </p>
-          
-           <div className="space-y-4">
+      <Card className="w-3/4 mx-auto px-8 text-center font-sans py-8 pb-16 font-medium max-h-min">
+        <img src="/gauge-logo-dark.png" alt="logo " className=" w-30" />
+        <p className="text-gray-600 text-2xl font-semibold mb-6">
+          We've sent a verification email to <strong>{email}</strong>
+        </p>
+        <p className="text-sm text-gray-500 mb-8">
+          Click the link in the email to activate your account.
+        </p>
+
+        <div className="space-y-4">
           <Button
             onClick={handleEmailResend}
             disabled={resending}
@@ -68,9 +69,7 @@ const handleEmailResend = async() => {
             Didn't receive the email? Check your spam folder or click resend.
           </p>
         </div>
-        </Card>
+      </Card>
     </div>
-  )
-}
-    
-
+  );
+};

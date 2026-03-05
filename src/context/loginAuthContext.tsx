@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
           const idToken = await getIdToken(firebaseUser);
           
-          const response = await fetch(`${API_URL}/api/auth/get-user-role`, {
+          const response = await fetch(`${API_URL}/role/get-role`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
