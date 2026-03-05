@@ -8,7 +8,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL ;
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ export const LoginPage = () => {
       const idToken = await getIdToken(user);
 
       // Get user role from backend
-      const response = await fetch(`${API_URL}/api/auth/get-user-role`, {
+      const response = await fetch(`${API_URL}/role/get-role`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
