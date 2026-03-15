@@ -35,7 +35,7 @@ export const useAuthActiviation = () => {
           if (data.success) {
             toast(data?.message, { position: "top-right" });
             // console.log("Account activated!", data);
-            navigate("/login");
+            navigate("/");
           }
         } catch (error) {
           // console.error("Error activating account:", error);
