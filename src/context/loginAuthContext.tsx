@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setRole(data.role);
           }
         } catch (error) {
-          // console.error("Error fetching user data:", error);
+          console.error("Error fetching user data:", error);
         }
       } else {
         setUser(null);

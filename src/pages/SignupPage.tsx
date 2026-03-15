@@ -12,8 +12,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
+import { isValidPhone } from "@/utils/validatePhoneNumber";
 
-const CLIENT_URL = import.meta.env.VITE_CLIENT_URL 
+const CLIENT_URL = import.meta.env.VITE_CLIENT_URL;
 
 export const SignupPage = () => {
   const navigate = useNavigate();
@@ -24,13 +25,11 @@ export const SignupPage = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const [isView, setIsView] = useState(false)
-
-
+  const [isView, setIsView] = useState(false);
 
   const handleViewPassword = () => {
-    setIsView(!isView)
-  }
+    setIsView(!isView);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -41,6 +40,12 @@ export const SignupPage = () => {
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!isValidPhone(formData.phone)) {
+      toast.error("Invalid phone number", {
+        position: "top-right",
+      });
+      return;
+    }
     setLoading(true);
     // console.log("Creating User");
 
@@ -59,10 +64,16 @@ export const SignupPage = () => {
         displayName: userName,
       });
 
+      let formatPhone = formData.phone.replace(/[\s\-+]/g, "");
+
+      if (formatPhone.startsWith("+234")) {
+        formatPhone = "0" + formatPhone.substring(4);
+      }
+
       await setDoc(doc(db, "associates", user.uid), {
         email: formData.email,
         fullName: formData.fullName,
-        phone: formData.phone,
+        phone: formatPhone,
         status: "pending",
         emailVerified: false,
         stats: {
@@ -76,7 +87,6 @@ export const SignupPage = () => {
       });
 
       await sendEmailVerification(user, {
-        
         url: `${CLIENT_URL}/verify-success`,
       });
 
@@ -91,7 +101,7 @@ export const SignupPage = () => {
 
       setFormData({ email: "", fullName: "", phone: "", password: "" });
     } catch (err) {
-      // console.error(err);
+      console.error(err);
       if (
         err instanceof Error &&
         "code" in err &&
@@ -204,9 +214,9 @@ export const SignupPage = () => {
               <Label className="text-sm font-medium text-gray-700 mb-2">
                 Password
               </Label>
-             
-                <Input
-                type={isView ? "text":"password"}
+
+              <Input
+                type={isView ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
@@ -214,11 +224,17 @@ export const SignupPage = () => {
                 className="w-full px-4 py-6"
                 placeholder="Min. 6 characters"
               />
-             { isView ? <Eye className="absolute right-4 top-11  w-5 h-5" onClick={handleViewPassword}/> : 
-             
-                <EyeOff  className=" absolute top-11  right-4 w-5 h-5" onClick={handleViewPassword}/>
-             }
-              
+              {isView ? (
+                <Eye
+                  className="absolute right-4 top-11  w-5 h-5"
+                  onClick={handleViewPassword}
+                />
+              ) : (
+                <EyeOff
+                  className=" absolute top-11  right-4 w-5 h-5"
+                  onClick={handleViewPassword}
+                />
+              )}
             </div>
 
             <Button
