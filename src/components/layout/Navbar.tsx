@@ -4,9 +4,13 @@ import { Button } from "../ui/button";
 export const Navbar = () => {
   const navigation = useNavigate();
   const isSignupPage = useMatch("/signup");
-  const isLeadsPage = useMatch("/leads");
+  const isVerifySuccess = useMatch("/verify-success")
+  const isEmailConfirmation = useMatch("/email-confirmation")
 
-  const handleAdminLogin = () => {
+  const handleLogin = () => {
+    navigation("/login");
+  };
+  const handleSignup = () => {
     navigation("/signup");
   };
 
@@ -18,17 +22,17 @@ export const Navbar = () => {
         className="bg-transparent w-24 "
       />
 
-      {!isLeadsPage &&
+      { !isVerifySuccess && !isEmailConfirmation &&
         (isSignupPage ? (
           <Button
-            onClick={handleAdminLogin}
+            onClick={handleLogin}
             className="bg-white text-black items-center hover:bg-white/85  "
           >
             Login
           </Button>
         ) : (
           <Button
-            onClick={handleAdminLogin}
+            onClick={handleSignup}
             className="bg-white text-black items-center hover:bg-white/85 "
           >
             Signup

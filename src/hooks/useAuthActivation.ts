@@ -27,19 +27,20 @@ export const useAuthActiviation = () => {
 
           if (!response.ok) {
             // console.error(data.error);
-            toast("An error occurred during activation", {
+            toast.error
+            ("Failed to send welcome email", {
               position: "top-right",
             });
           }
 
           if (data.success) {
-            toast(data?.message, { position: "top-right" });
+            toast.success(data?.message, { position: "top-right" });
             // console.log("Account activated!", data);
-            navigate("/");
+            navigate("/login");
           }
         } catch (error) {
           // console.error("Error activating account:", error);
-          toast("An error occurred during activation", {
+          toast.error("An error occurred during activation", {
             position: "top-right",
           });
         }

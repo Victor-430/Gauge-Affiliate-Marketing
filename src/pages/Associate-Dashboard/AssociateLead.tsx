@@ -37,7 +37,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { DashboardLayout } from "./components/DashboardLayout";
 import { toast } from "sonner";
 import { useAssociateData } from "@/hooks/useAssociateData";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -166,17 +165,15 @@ export default function AssociateLeads() {
 
   if (loading) {
     return (
-      <DashboardLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
         </div>
-      </DashboardLayout>
+      
     );
   }
 
   if (error) {
     return (
-      <DashboardLayout>
         <div className="max-w-2xl mx-auto mt-8">
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -185,12 +182,11 @@ export default function AssociateLeads() {
             </AlertDescription>
           </Alert>
         </div>
-      </DashboardLayout>
     );
   }
 
   return (
-    <DashboardLayout>
+    
       <div className="max-w-6xl mx-auto space-y-8">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
@@ -408,6 +404,5 @@ export default function AssociateLeads() {
           </DialogContent>
         </Dialog>
       </div>
-    </DashboardLayout>
   );
 }

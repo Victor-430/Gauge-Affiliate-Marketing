@@ -22,13 +22,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const authState = onAuthStateChanged(auth, async (firebaseUser) => {
-      
       if (firebaseUser) {
         setUser(firebaseUser);
-        
+
         try {
           const idToken = await getIdToken(firebaseUser);
-          
+          // console.log("Token:", idToken);
+
+          if (!idToken) {
+            console.error("Failed to get token - logging out");
+            await auth.signOut();
+            setUser(null);
+            setUserData(null);
+            setRole(null);
+            setLoading(false);
+            return;
+          }
+
           const response = await fetch(`${API_URL}/role/get-role`, {
             method: "POST",
             headers: {
@@ -44,14 +54,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setRole(data.role);
           }
         } catch (error) {
-          // console.error("Error fetching user data:", error);
+          console.error("Error fetching user data:", error);
+          await auth.signOut();
+          setUser(null);
+          setUserData(null);
+          setRole(null);
         }
       } else {
         setUser(null);
         setUserData(null);
         setRole(null);
       }
-      
+
       setLoading(false);
     });
 

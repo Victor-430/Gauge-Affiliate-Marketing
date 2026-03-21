@@ -140,7 +140,7 @@ export const SignupPage = () => {
         err.code === "auth/password-does-not-meet-requirements"
       ) {
         toast.error(
-          "Password must contain a lower case, an upper case,symbol and number",
+          "Password must include: uppercase, lowercase, number, and symbol",
           {
             position: "top-right",
           },

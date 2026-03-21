@@ -29,7 +29,7 @@ export const VerificationPage = () => {
   }, []);
 
   const handleLogin = () => {
-    navigate("/");
+    navigate("/login");
   };
 
     const handleRefresh = async () => {
@@ -56,9 +56,9 @@ export const VerificationPage = () => {
   return (
     <div className="flex items-center justify-center  min-h-screen font-sans">
       {isVerified ? (
-        <Card className="w-3/4 max-w-xl px-8 py-16">
-          <h2 className="text-2xl font-semibold mb-4 text-center">
-            Verification successful
+        <Card className="w-[85%] md:w-3/4 max-w-xl px-8 py-16">
+          <h2 className="text-md md:text-2xl font-semibold mb-4 text-center">
+            Verification Successful
           </h2>
 
           <Button onClick={handleLogin} className="w-full">
@@ -66,14 +66,14 @@ export const VerificationPage = () => {
           </Button>
         </Card>
       ) : (
-        <Card className="w-3/4 max-w-xl px-8 py-16 text-center">
+        <Card className="w-[85%] md:w-3/4 max-w-xl px-4 md:px-8 py-8 md:py-16 text-center">
          
 
-           <h2 className="text-2xl font-semibold mb-4">
+           <h2 className="text-lg md:text-2xl font-semibold mb-4">
             Please Verify Your Email
           </h2>
           <p className="text-gray-600 mb-2">
-            We've sent a verification email to{" "}
+            We've sent a verification email to
             <strong>{auth.currentUser?.email}</strong>
           </p>
           <p className="text-sm text-gray-500 mb-6">
@@ -90,7 +90,10 @@ export const VerificationPage = () => {
                 Checking...
               </>
             ) : (
-              "I've Verified My Email (Refresh)"
+              <p className="px-4">
+                "I've Verified My Email (Refresh)"
+
+              </p>
             )}
           </Button>
         </Card>

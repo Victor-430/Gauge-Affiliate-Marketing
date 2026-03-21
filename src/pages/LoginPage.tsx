@@ -2,13 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth } from "@/config/FirebaseConfig";
-import { signInWithEmailAndPassword, getIdToken } from "firebase/auth";
-import { Eye, EyeOff, } from "lucide-react";
+import { signInWithEmailAndPassword} from "firebase/auth";
+import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_URL ;
+// const API_URL = import.meta.env.VITE_API_URL;
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -48,36 +48,34 @@ export const LoginPage = () => {
         return;
       }
 
-      const idToken = await getIdToken(user);
+      navigate("/");
 
-      // Get user role from backend
-      const response = await fetch(`${API_URL}/role/get-role`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ idToken }),
-      });
+      //   const idToken = await getIdToken(user);
 
-      const data = await response.json();
+      //   // Get user role from backend
+      //   const response = await fetch(`${API_URL}/role/get-role`, {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({ idToken }),
+      //   });
 
-      if (!data?.success) {
-        toast.error(data?.error, {
-          position: "top-right",
-        });
-        return;
-      }
+      //   const data = await response.json();
 
-      toast.success("Login successful!", { position: "top-right" });
+      //   if (!data?.success) {
+      //     toast.error(data?.error, {
+      //       position: "top-right",
+      //     });
+      //     return;
+      //   }
 
-      // Redirect based on role
-      if (data.role === "admin") {
-        navigate("/admin/dashboard");
-      } else if (data.role === "associate") {
-        navigate("/associate/dashboard");
-      } else {
-        toast.error("Invalid user role", { position: "top-right" });
-      }
+      //   // Redirect based on role
+      //   if (data.role === "admin") {
+      //     navigate("/admin");
+      //   } else if (data.role === "associate") {
+      //     navigate("/");
+      //   }
     } catch (err) {
       // console.error("Login error:", err);
 

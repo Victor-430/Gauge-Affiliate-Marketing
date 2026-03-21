@@ -12,24 +12,43 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/loginAuthContext";
+import { useAssociateData } from "@/hooks/useAssociateData";
 
-const navItems = [
+const STATIC_NAV_ITEMS = [
   {
     title: "Dashboard",
-    url: "/associate/dashboard",
+    url: "/",
     icon: LayoutDashboard,
     active: true,
   },
-  { title: "Leads", url: "/associate/leads", icon: Users, active: true },
-  { title: "Submit Lead", url: "/leads", icon: SendHorizontal, active: true },
+  {
+    title: "Leads",
+    url: "/leads",
+    icon: Users,
+    active: true,
+  },
 ];
+
 
 export function AppSidebar() {
   const navigate = useNavigate();
+
+  const { associate } = useAssociateData();
+
+  const navItems = [
+    ...STATIC_NAV_ITEMS,
+    {
+      title: "Submit Lead",
+      url: `/submit-lead?ref=${associate?.uniqueCode || ""}`,
+      icon: SendHorizontal,
+      active: true,
+    },
+  ];
+
   const { logout } = useAuth();
 
   const handleLogout = () => {
-    navigate("/");
+    navigate("/login");
     logout();
   };
 

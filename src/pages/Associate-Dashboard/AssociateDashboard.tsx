@@ -19,7 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DashboardLayout } from "./components/DashboardLayout";
 import { useAssociateData } from "@/hooks/useAssociateData";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -65,17 +64,16 @@ export default function AssociateDashboard() {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
         <div className="flex items-center justify-center min-h[60vh]">
           <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
         </div>
-      </DashboardLayout>
+      
     );
   }
 
   if (error || !associate) {
     return (
-      <DashboardLayout>
+      
         <div className="max-w-2xl mx-auto mt-8">
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -84,7 +82,6 @@ export default function AssociateDashboard() {
             </AlertDescription>
           </Alert>
         </div>
-      </DashboardLayout>
     );
   }
 
@@ -109,7 +106,7 @@ export default function AssociateDashboard() {
   ];
 
   return (
-    <DashboardLayout>
+   
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Welcome */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -124,7 +121,7 @@ export default function AssociateDashboard() {
               </span>
             </p>
           </div>
-           <Button className="gap-2 self-start">
+           <Button onClick={handleSubmitLead} className="gap-2 self-start">
               <SendHorizontal className="h-4 w-4" />
               Submit New Lead
             </Button>
@@ -226,6 +223,5 @@ export default function AssociateDashboard() {
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
   );
 }
