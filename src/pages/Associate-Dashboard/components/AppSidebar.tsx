@@ -10,6 +10,7 @@ import {
   SidebarMenuItem,
   SidebarFooter,
   SidebarHeader,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/loginAuthContext";
 import { useAssociateData } from "@/hooks/useAssociateData";
@@ -32,9 +33,12 @@ const STATIC_NAV_ITEMS = [
 
 export function AppSidebar() {
   const navigate = useNavigate();
+  const {setOpenMobile} = useSidebar()
+const { associate } = useAssociateData();
 
-  const { associate } = useAssociateData();
-
+const handleNavClick = () => {
+  setOpenMobile(false)
+}
   const navItems = [
     ...STATIC_NAV_ITEMS,
     {
@@ -53,7 +57,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="border-r-0 ">
+    <Sidebar className="border-r-0">
       <SidebarHeader className="p-6 border-b border-gray-50 bg-black ">
         <div className="flex items-center gap-2">
           <img src="/Gauge logo-white.png" alt="logo" className="w-20" />
@@ -68,6 +72,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild disabled={!item.active}>
                     <NavLink
+                    onClick={handleNavClick}
                       to={item.url}
                       className={({ isActive }) =>
                         isActive
