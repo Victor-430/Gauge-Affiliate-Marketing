@@ -14,6 +14,21 @@ export const ProtectedRoute = ({  allowedRole }: ProtectedRouteProps) => {
   const hasShownUnauthorized = useRef(false);
   const hasShownWelcome = useRef(false);
 
+//  useEffect(() => {
+//     if (!user) {
+//       hasShownUnauthorized.current = false;
+//       hasShownWelcome.current = false;
+//     }
+//   }, [user]);
+
+  // console.log("🛡️ ProtectedRoute render:", { 
+  //   user: !!user, 
+  //   role, 
+  //   loading,
+  //   allowedRole,
+  //   timestamp: new Date().toISOString()
+  // });
+
   useEffect(() => {
     if (!loading && user && role && role !== allowedRole && !hasShownUnauthorized.current) {
       hasShownUnauthorized.current = true;

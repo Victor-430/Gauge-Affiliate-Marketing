@@ -22,15 +22,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const authState = onAuthStateChanged(auth, async (firebaseUser) => {
+      setLoading(true);
+
       if (firebaseUser) {
+        // console.log("logged in user: ", firebaseUser);
         setUser(firebaseUser);
 
         try {
-          const idToken = await getIdToken(firebaseUser);
+          const idToken = await getIdToken(firebaseUser, true);
           // console.log("Token:", idToken);
 
           if (!idToken) {
-            console.error("Failed to get token - logging out");
+            // console.error("Failed to get token - logging out");
             await auth.signOut();
             setUser(null);
             setUserData(null);
@@ -47,26 +50,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             body: JSON.stringify({ idToken }),
           });
 
+          if (!response.ok) {
+            // console.error(
+            //   `API Error: ${response.status} ${response.statusText}`,
+            // );
+            await auth.signOut();
+            setUser(null);
+            setUserData(null);
+            setRole(null);
+            setLoading(false);
+            return;
+          }
+
           const data = await response.json();
 
           if (data.success) {
             setUserData(data.user);
             setRole(data.role);
+            setLoading(false);
           }
         } catch (error) {
-          console.error("Error fetching user data:", error);
+          // console.error("Error fetching user data:", error);
           await auth.signOut();
           setUser(null);
           setUserData(null);
           setRole(null);
+          setLoading(false);
         }
       } else {
         setUser(null);
         setUserData(null);
         setRole(null);
+        setLoading(false);
       }
-
-      setLoading(false);
     });
 
     return () => authState();
@@ -74,9 +90,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     await auth.signOut();
-    setUser(null);
-    setUserData(null);
-    setRole(null);
   };
 
   return (

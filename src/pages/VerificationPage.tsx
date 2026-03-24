@@ -54,7 +54,7 @@ export const VerificationPage = () => {
   }
 
   return (
-    <div className="flex items-center justify-center  min-h-screen font-sans">
+    <div className="flex items-center justify-center min-h-[80vh] md:min-h-screen font-sans">
       {isVerified ? (
         <Card className="w-[85%] md:w-3/4 max-w-xl px-8 py-16">
           <h2 className="text-md md:text-2xl font-semibold mb-4 text-center">
