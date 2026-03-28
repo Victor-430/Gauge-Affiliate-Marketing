@@ -7,7 +7,7 @@ import { formatDistanceToNow } from "date-fns";
       const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
       return formatDistanceToNow(date, { addSuffix: true });
     } catch (err) {
-      console.error(err);
+      // console.error(err);
       return "--";
     }
   };
@@ -25,7 +25,7 @@ import { formatDistanceToNow } from "date-fns";
         minute: "2-digit",
       })
     } catch (err) {
-      console.error(err);
+      // console.error(err);
       return "--";
     }
   };

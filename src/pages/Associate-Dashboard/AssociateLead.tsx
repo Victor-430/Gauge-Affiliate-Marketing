@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   MoreVertical,
   ArrowUpRight,
@@ -93,6 +93,15 @@ export default function AssociateLeads() {
   } = useAssociateData();
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [converting, setConverting] = useState(false);
+  const [undoing, setUndoing] = useState(false);
+
+useEffect(() => {
+  if (selectedLead) {
+    const updated = leads.find((l) => l.id === selectedLead.id);
+    if (updated) setSelectedLead(updated);
+  }
+}, [leads]);
+
 
   const canConvert = (lead: Lead) => {
     return (
@@ -107,9 +116,7 @@ export default function AssociateLeads() {
     if (lead?.dealStatus === "closed" || lead?.dealStatus === "rejected")
       return false;
 
-    const convertedTime = new Date(lead.convertedAt).getTime();
-    const now = Date.now();
-    return now - convertedTime < 30 * 60 * 1000; // 30 minutes
+    return Date.now() - lead.convertedAt.toDate().getTime() < 30 * 60 * 1000;
   };
 
   const handleConvert = async (leadId: string) => {
@@ -124,7 +131,6 @@ export default function AssociateLeads() {
     setConverting(true);
     try {
       await convertLead(leadId);
-      setSelectedLead(null);
       toast.success(
         "Lead marked as converted. You can undo within 30 minutes.",
         {
@@ -147,7 +153,7 @@ export default function AssociateLeads() {
       return;
     }
 
-    setConverting(true);
+    setUndoing(true);
     try {
       await undoConvertedLead(leadId);
       setSelectedLead(null);
@@ -159,7 +165,7 @@ export default function AssociateLeads() {
         position: "top-right",
       });
     } finally {
-      setConverting(false);
+      setUndoing(false);
     }
   };
 
@@ -279,6 +285,7 @@ export default function AssociateLeads() {
                             {canUndo(lead) && (
                               <DropdownMenuItem
                                 onClick={() => handleUndo(lead?.id)}
+                                disabled={undoing}
                               >
                                 <Undo2 className="h-4 w-4 mr-2" />
                                 Undo Convert
@@ -383,9 +390,10 @@ export default function AssociateLeads() {
                     <Button
                       variant="outline"
                       onClick={() => handleUndo(selectedLead.id)}
+                      disabled={undoing}
                       className="gap-1.5"
                     >
-                      {converting ? (
+                      {undoing ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin" />
                           Undoing...

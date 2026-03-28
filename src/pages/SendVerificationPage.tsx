@@ -49,7 +49,8 @@ export const SendVerificationPage = () => {
       <Card className="w-[85%] md:w-3/4 mx-auto px-4 md:px-8 text-center font-sans py-8 pb-8 md:pb-16 font-medium max-h-min">
         <img src="/gauge-logo-dark.png" alt="logo " className="w-20 md:w-30" />
         <p className="text-gray-600 text-sm sm:text-lg md:text-2xl font-semibold mt-4 md:mt-10 mb-2 md:mb-6">
-          We've sent a verification email to <strong>{email}</strong>
+          We've sent a verification email to {" "}
+          <strong>{email}</strong>
         </p>
         <p className="text-sm text-gray-500 mb-2 md:mb-8">
           Click the link in the email to activate your account.
