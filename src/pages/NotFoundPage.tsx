@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router";
 
@@ -17,13 +18,13 @@ export const NotFoundPage = () => {
       <p className="text-sm text-black  leading-relaxed mb-10">
         The page you're looking for doesn't exist or has been moved.
       </p>
-      <button
+      <Button
         onClick={handleBackButton}
-        className="inline-flex items-center gap-2 bg-black text-white text-sm font-medium px-5 py-2.5 rounded-lg hover:opacity-85 transition-opacity"
+        className=" bg-black text-white text-sm font-medium px-5 py-5 hover:opacity-85 transition-opacity"
       >
        <ChevronLeft />
         Go back
-      </button>
+      </Button>
     </div>
   );
 }

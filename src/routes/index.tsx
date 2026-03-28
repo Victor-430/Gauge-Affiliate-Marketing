@@ -13,12 +13,14 @@ import AssociateDashboard from "@/pages/Associate-Dashboard/AssociateDashboard";
 import AssociateLeads from "@/pages/Associate-Dashboard/AssociateLead";
 import { DashboardLayout } from "@/pages/Associate-Dashboard/components/DashboardLayout";
 import { LoginPage } from "@/pages/LoginPage";
+import { ErrorBoundaryPage } from "@/pages/ErrorBoundaryPage";
 
 export const router = createBrowserRouter([
   // associate route
   {
     path: "/",
     element: <ProtectedRoute allowedRole="associate" />,
+    ErrorBoundary: ErrorBoundaryPage,
     children: [
       {
         Component: DashboardLayout,
@@ -40,6 +42,7 @@ export const router = createBrowserRouter([
   // public route
   {
     element: <MainLayout />,
+    ErrorBoundary: ErrorBoundaryPage,
     // loader: LoadingPage,
     children: [
       { path: "/signup", Component: SignupPage },
