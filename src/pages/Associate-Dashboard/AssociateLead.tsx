@@ -115,7 +115,7 @@ useEffect(() => {
     if (lead?.leadStatus !== "converted" || !lead?.convertedAt) return false;
     if (lead?.dealStatus === "closed" || lead?.dealStatus === "rejected")
       return false;
-
+// console.log(lead.convertedAt.toDate().getTime())
     return Date.now() - lead.convertedAt.toDate().getTime() < 30 * 60 * 1000;
   };
 

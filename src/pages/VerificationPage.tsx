@@ -1,18 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { auth } from "@/config/FirebaseConfig";
-import { useAuthActiviation } from "@/hooks/useAuthActivation"; 
+import { useAuthActiviation } from "@/hooks/useAuthActivation";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 export const VerificationPage = () => {
   const [isVerified, setIsVerified] = useState(false);
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useAuthActiviation( )
+  useAuthActiviation();
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -22,7 +22,7 @@ export const VerificationPage = () => {
         await user.reload();
         setIsVerified(user.emailVerified);
       }
-      setIsLoading(false)
+      setIsLoading(false);
     };
 
     checkStatus();
@@ -32,8 +32,8 @@ export const VerificationPage = () => {
     navigate("/login");
   };
 
-    const handleRefresh = async () => {
-      //  console.log("Refresh button clicked");
+  const handleRefresh = async () => {
+    //  console.log("Refresh button clicked");
     setIsRefreshing(true);
     const user = auth.currentUser;
     if (user) {
@@ -45,7 +45,7 @@ export const VerificationPage = () => {
     setIsRefreshing(false);
   };
 
-   if (isLoading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-black" />
@@ -67,9 +67,7 @@ export const VerificationPage = () => {
         </Card>
       ) : (
         <Card className="w-[85%] md:w-3/4 max-w-xl px-4 md:px-8 py-8 md:py-16 text-center">
-         
-
-           <h2 className="text-lg md:text-2xl font-semibold mb-4">
+          <h2 className="text-lg md:text-2xl font-semibold mb-4">
             Please Verify Your Email
           </h2>
           <p className="text-gray-600 mb-2">
@@ -79,8 +77,8 @@ export const VerificationPage = () => {
           <p className="text-sm text-gray-500 mb-6">
             Click the link in the email to verify your account.
           </p>
-        <Button 
-            onClick={handleRefresh} 
+          <Button
+            onClick={handleRefresh}
             disabled={isRefreshing}
             className="w-full"
           >
@@ -90,10 +88,11 @@ export const VerificationPage = () => {
                 Checking...
               </>
             ) : (
-              <p className="px-4">
-                "I've Verified My Email (Refresh)"
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
 
-              </p>
+                <p className="px-4">"I've Verified My Email (Refresh)"</p>
+              </>
             )}
           </Button>
         </Card>

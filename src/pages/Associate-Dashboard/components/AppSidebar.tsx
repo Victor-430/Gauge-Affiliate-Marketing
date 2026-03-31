@@ -1,4 +1,12 @@
-import { LayoutDashboard, Users, SendHorizontal, LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  SendHorizontal,
+  LogOut,
+  FileText,
+  BarChart3,
+  Settings,
+} from "lucide-react";
 import { NavLink, useNavigate } from "react-router";
 import {
   Sidebar,
@@ -15,7 +23,7 @@ import {
 import { useAuth } from "@/context/loginAuthContext";
 import { useAssociateData } from "@/hooks/useAssociateData";
 
-const STATIC_NAV_ITEMS = [
+const ASSOCIATE_STATIC_NAV_ITEMS = [
   {
     title: "Dashboard",
     url: "/",
@@ -30,24 +38,41 @@ const STATIC_NAV_ITEMS = [
   },
 ];
 
+const ADMIN_NAV_ITEMS = [
+  {
+    title: "Dashboard",
+    url: "/admin/dashboard",
+    icon: LayoutDashboard,
+    active: true,
+  },
+  { title: "All Leads", url: "/admin/leads", icon: FileText, active: true },
+  { title: "Reports", url: "/admin/reports", icon: BarChart3, active: true },
+  { title: "Settings", url: "#", icon: Settings, active: false },
+];
 
-export function AppSidebar() {
+type Sidebar = "admin" | "associate";
+
+export function AppSidebar({ role }: AppSidebarProps) {
   const navigate = useNavigate();
-  const {setOpenMobile} = useSidebar()
-const { associate } = useAssociateData();
+  const { setOpenMobile } = useSidebar();
+  const { associate } = useAssociateData();
 
-const handleNavClick = () => {
-  setOpenMobile(false)
-}
-  const navItems = [
-    ...STATIC_NAV_ITEMS,
-    {
-      title: "Submit Lead",
-      url: `/submit-lead?ref=${associate?.uniqueCode || ""}`,
-      icon: SendHorizontal,
-      active: true,
-    },
-  ];
+  const handleNavClick = () => {
+    setOpenMobile(false);
+  };
+  
+  const navItems =
+    role === "admin"
+      ? ADMIN_NAV_ITEMS
+      : [
+          ...ASSOCIATE_STATIC_NAV_ITEMS,
+          {
+            title: "Submit Lead",
+            url: `/submit-lead?ref=${associate?.uniqueCode || ""}`,
+            icon: SendHorizontal,
+            active: true,
+          },
+        ];
 
   const { logout } = useAuth();
 
@@ -72,7 +97,7 @@ const handleNavClick = () => {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild disabled={!item.active}>
                     <NavLink
-                    onClick={handleNavClick}
+                      onClick={handleNavClick}
                       to={item.url}
                       className={({ isActive }) =>
                         isActive

@@ -8,7 +8,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 
-
 export const LeadsPage = () => {
   const [formData, setFormData] = useState<LeadForm>({
     contactEmail: "",
@@ -175,7 +174,11 @@ export const LeadsPage = () => {
       <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-lg">
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="text-center mbb-8">
-            <img src="/gauge-logo-dark.png" className="w-20 mx-auto" alt="logo" />
+            <img
+              src="/gauge-logo-dark.png"
+              className="w-20 mx-auto"
+              alt="logo"
+            />
             <p className="text-sm text-gray-600 mt-2">
               Fill out the form to get started
             </p>
@@ -347,7 +350,14 @@ export const LeadsPage = () => {
             disabled={isloading || isVerifyingCode || !isValidCode}
             className="w-full bg-black text-white py-6 font-semibold hover:bg-black/85 disabled:bg-gray-400 transition"
           >
-            {isloading ? "Submitting" : "Submit"}
+            {isloading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin text-black" />
+                "Submitting"
+              </>
+            ) : (
+              "Submit"
+            )}
           </Button>
         </form>
       </div>

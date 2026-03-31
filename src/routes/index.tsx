@@ -23,7 +23,7 @@ export const router = createBrowserRouter([
     ErrorBoundary: ErrorBoundaryPage,
     children: [
       {
-        Component: DashboardLayout,
+        element: <DashboardLayout role="associate" />,
         children: [
           { index: true, Component: AssociateDashboard },
           { path: "leads", Component: AssociateLeads },
@@ -37,7 +37,12 @@ export const router = createBrowserRouter([
   },
 
   // admin route
-  { path: "/admin", Component: AdminDashboard, children: [] },
+  {
+    path: "/admin",
+    element: <ProtectedRoute allowedRole="admin" />,
+    ErrorBoundary: ErrorBoundaryPage,
+    children: [{ path: "/leads", Component: AdminDashboard, children: [] }],
+  },
 
   // public route
   {
