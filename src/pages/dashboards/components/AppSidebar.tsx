@@ -41,12 +41,12 @@ const ASSOCIATE_STATIC_NAV_ITEMS = [
 const ADMIN_NAV_ITEMS = [
   {
     title: "Dashboard",
-    url: "/admin/dashboard",
+    url: "/admin",
     icon: LayoutDashboard,
     active: true,
   },
-  { title: "All Leads", url: "/admin/leads", icon: FileText, active: true },
-  { title: "Reports", url: "/admin/reports", icon: BarChart3, active: true },
+  { title: "All Leads", url: "/leads", icon: FileText, active: true },
+  { title: "Reports", url: "/reports", icon: BarChart3, active: true },
   { title: "Settings", url: "#", icon: Settings, active: false },
 ];
 
@@ -60,7 +60,7 @@ export function AppSidebar({ role }: AppSidebarProps) {
   const handleNavClick = () => {
     setOpenMobile(false);
   };
-  
+
   const navItems =
     role === "admin"
       ? ADMIN_NAV_ITEMS
