@@ -1,4 +1,35 @@
-import { Associate, Lead } from './mockData'
+
+export interface Associate {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  uniqueCode: string;
+  status: "active" | "pending" | "suspended";
+  stats: {
+    totalLeads: number;
+    convertedLeads: number;
+    closedDeals: number;
+    rejectedDeals: number;
+    pendingDeals: number;
+  };
+}
+
+export interface Lead {
+  id: string;
+  associateId: string;
+  companyName: string;
+  industry: string;
+  contactFullName: string;
+  contactRole: string;
+  contactEmail: string;
+  contactPhone: string;
+  leadStatus: "new" | "converted";
+  dealStatus: "pending" | "closed" | "rejected" | null;
+  submittedAt: string;
+  convertedAt?: string;
+  dealClosedAt?: string;
+}
 
 export interface AdminStats {
   totalAssociates: number;

@@ -45,8 +45,8 @@ const ADMIN_NAV_ITEMS = [
     icon: LayoutDashboard,
     active: true,
   },
-  { title: "All Leads", url: "/leads", icon: FileText, active: true },
-  { title: "Reports", url: "/reports", icon: BarChart3, active: true },
+  { title: "All Leads", url: "/admin/leads", icon: FileText, active: true },
+  { title: "Reports", url: "/admin/reports", icon: BarChart3, active: true },
   { title: "Settings", url: "#", icon: Settings, active: false },
 ];
 

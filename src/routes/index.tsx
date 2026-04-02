@@ -27,10 +27,6 @@ export const router = createBrowserRouter([
         children: [
           { index: true, Component: AssociateDashboard },
           { path: "leads", Component: AssociateLeads },
-          {
-            path: "submit-lead",
-            Component: LeadsPage,
-          },
         ],
       },
     ],
@@ -39,16 +35,18 @@ export const router = createBrowserRouter([
   // admin route
   {
     path: "/admin",
-    element: <ProtectedRoute allowedRole="admin" />,
+    // element: <ProtectedRoute allowedRole="admin" />,
     ErrorBoundary: ErrorBoundaryPage,
     children: [
-      
-      { index:true, Component: AdminDashboard},
-      { path: "leads", Component: AdminDashboard },
-      { path: "report", Component: AdminDashboard }
-      
-  
-  ],
+      {
+        element: <DashboardLayout role="admin" />,
+        children: [
+          { index: true, Component: AdminDashboard },
+          { path: "/admin/leads", Component: AdminDashboard },
+          { path: "/admin/reports", Component: AdminDashboard },
+        ],
+      },
+    ],
   },
 
   // public route
@@ -66,7 +64,10 @@ export const router = createBrowserRouter([
         path: "/verify-success",
         Component: VerificationPage,
       },
-
+      {
+        path: "/submit-lead",
+        Component: LeadsPage,
+      },
       {
         path: "/sales",
         Component: ReferralPage,
