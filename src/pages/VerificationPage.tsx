@@ -71,7 +71,7 @@ export const VerificationPage = () => {
             Please Verify Your Email
           </h2>
           <p className="text-gray-600 mb-2">
-            We've sent a verification email to
+            We've sent a verification email to {" "}
             <strong>{auth.currentUser?.email}</strong>
           </p>
           <p className="text-sm text-gray-500 mb-6">
@@ -91,7 +91,7 @@ export const VerificationPage = () => {
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
 
-                <p className="px-4">"I've Verified My Email (Refresh)"</p>
+                <p className="px-4">I've Verified My Email (Refresh)</p>
               </>
             )}
           </Button>

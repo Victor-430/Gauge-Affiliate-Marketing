@@ -44,7 +44,7 @@ export const LoginPage = () => {
         toast.error("Please verify your email before logging in.", {
           position: "top-right",
         });
-        navigate("/verify-success"); 
+        navigate("/email-confirmation", {state:{email:user.email}}); 
         // add state, pass user and resend email confirmation using /email-confirmation
         return;
       }
@@ -183,10 +183,10 @@ export const LoginPage = () => {
             {loading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Logging in...
+                <p>Logging in...</p>
               </>
             ) : (
-              "Login"
+              <p>Login</p>
             )}
           </Button>
         </form>
