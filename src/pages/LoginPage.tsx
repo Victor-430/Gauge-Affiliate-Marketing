@@ -33,10 +33,16 @@ export const LoginPage = () => {
     try {
       await signInWithEmailAndPassword(auth, formData.email, formData.password);
 
-      navigate("/");
-      toast.success("Login successful!", {
-        position: "top-right",
-      });
+      const emailVerified = auth.currentUser?.emailVerified;
+
+      if (!emailVerified) {
+        navigate("/email-confirmation");
+      } else {
+        navigate("/");
+        toast.success("Login successful!", {
+          position: "top-right",
+        });
+      }
     } catch (err) {
       // console.error("Login error:", err);
 
