@@ -3,59 +3,59 @@ import { Card } from "@/components/ui/card";
 import { auth } from "@/config/FirebaseConfig";
 import { sendEmailVerification } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import {useNavigate } from "react-router";
 import { toast } from "sonner";
 
 export const EmailConfirmationPage = () => {
-  const location = useLocation();
-  const fromSignup = location?.state?.fromSignup === true;
+  // const location = useLocation();
+  // const fromSignup = location?.state?.fromSignup === true;
   const navigate = useNavigate();
   const [resending, setResending] = useState(false);
   const user = auth.currentUser;
   const userEmail = user?.email ?? "";
-  const [emailSent, setEmailSent] = useState(false);
+  // const [emailSent, setEmailSent] = useState(false);
 
   const CLIENT_URL = import.meta.env.VITE_CLIENT_URL;
 
-  useEffect(() => {
-    const shouldAutoSend =
-      user && !user.emailVerified && !emailSent && !fromSignup;
+  // useEffect(() => {
+  //   const shouldAutoSend =
+  //     user && !user.emailVerified && !emailSent && !fromSignup;
 
-    if (!shouldAutoSend) return;
+  //   if (!shouldAutoSend) return;
 
-    const autoSend = async () => {
-      try {
-        setEmailSent(true);
-        await sendEmailVerification(user, {
-          url: `${CLIENT_URL}/verify-success`,
-        });
-        toast.success("Verification email has been sent to your inbox", {
-          position: "top-right",
-        });
-      } catch (err) {
-        setEmailSent(false);
-        if (
-          err instanceof Error &&
-          "code" in err &&
-          err.code === "auth/too-many-requests"
-        ) {
-          toast.info(
-            "Verification email was already sent recently. Please check your inbox/spam.",
-            {
-              position: "top-right",
-            },
-          );
-        } else {
-          // console.error(err);
-          toast.error(
-            "Failed to send verification email. Click the resend button",
-          );
-        }
-      }
-    };
+  //   const autoSend = async () => {
+  //     try {
+  //       setEmailSent(true);
+  //       await sendEmailVerification(user, {
+  //         url: `${CLIENT_URL}/verify-success`,
+  //       });
+  //       toast.success("Verification email has been sent to your inbox", {
+  //         position: "top-right",
+  //       });
+  //     } catch (err) {
+  //       setEmailSent(false);
+  //       if (
+  //         err instanceof Error &&
+  //         "code" in err &&
+  //         err.code === "auth/too-many-requests"
+  //       ) {
+  //         toast.info(
+  //           "Verification email was already sent recently. Please check your inbox/spam.",
+  //           {
+  //             position: "top-right",
+  //           },
+  //         );
+  //       } else {
+  //         // console.error(err);
+  //         toast.error(
+  //           "Failed to send verification email. Click the resend button",
+  //         );
+  //       }
+  //     }
+  //   };
 
-    autoSend();
-  }, [user, fromSignup, emailSent]);
+  //   autoSend();
+  // }, [user, fromSignup, emailSent]);
 
   const handleEmailResend = async () => {
     if (!user) {
@@ -68,13 +68,13 @@ export const EmailConfirmationPage = () => {
 
     setResending(true);
     try {
-      setEmailSent(true);
+      // setEmailSent(true);
       await sendEmailVerification(user, {
         url: `${CLIENT_URL}/verify-success`,
       });
       toast.success("Verification Email Resent", { position: "top-right" });
     } catch (err) {
-      setEmailSent(false);
+      // setEmailSent(false);
       if (
         err instanceof Error &&
         "code" in err &&
