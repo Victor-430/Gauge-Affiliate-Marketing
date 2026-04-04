@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, getIdToken, type User } from "firebase/auth";
 import { auth } from "@/config/FirebaseConfig";
 
-
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 interface AuthContextType {
@@ -24,9 +23,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const authState = onAuthStateChanged(auth, async (firebaseUser) => {
-      const emailVerified = firebaseUser?.emailVerified;
-      console.log(emailVerified)
-      
       setLoading(true);
 
       if (firebaseUser) {

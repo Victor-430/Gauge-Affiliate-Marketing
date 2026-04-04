@@ -96,12 +96,12 @@ export const SignupPage = () => {
       );
 
       navigate("/email-confirmation", {
-        state: { email: formData.email },
+        state: { fromSignup:true},
       });
 
       setFormData({ email: "", fullName: "", phone: "", password: "" });
     } catch (err) {
-      console.error(err);
+      // console.error(err);
       if (
         err instanceof Error &&
         "code" in err &&

@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 
-export const LeadsPage = () => {
+export const SubmitLeadPage = () => {
   const [formData, setFormData] = useState<LeadForm>({
     contactEmail: "",
     contactFullName: "",
@@ -353,10 +353,11 @@ export const LeadsPage = () => {
             {isloading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin text-black" />
-                "Submitting"
+                <p>Submitting</p>
               </>
             ) : (
-              "Submit"
+              <p>Submit</p>
+              
             )}
           </Button>
         </form>

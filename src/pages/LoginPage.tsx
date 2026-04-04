@@ -33,19 +33,10 @@ export const LoginPage = () => {
     try {
       await signInWithEmailAndPassword(auth, formData.email, formData.password);
 
-      // const user = userCredential.user;
-
-      // Check if email is verified (skip for admin)
-      // if (!user.emailVerified) {
-      //   toast.error("Please verify your email before logging in.", {
-      //     position: "top-right",
-      //   });
-      //   navigate("/email-confirmation", {state:{email:user.email}});
-      //   // add state, pass user and resend email confirmation using /email-confirmation
-      //   // return;
-      // }
-
       navigate("/");
+      toast.success("Login successful!", {
+        position: "top-right",
+      });
     } catch (err) {
       // console.error("Login error:", err);
 

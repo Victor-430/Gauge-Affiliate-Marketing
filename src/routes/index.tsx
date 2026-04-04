@@ -1,9 +1,9 @@
 import { createBrowserRouter } from "react-router";
 import { SignupPage } from "@/pages/SignupPage";
-import { LeadsPage } from "@/pages/LeadsPage";
+import { SubmitLeadPage } from "@/pages/SubmitLeadPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { MainLayout } from "@/layouts/MainLayout";
-import { SendVerificationPage } from "@/pages/SendVerificationPage";
+import { EmailConfirmationPage} from "@/pages/EmailConfirmationPage";
 import { VerificationPage } from "@/pages/VerificationPage";
 import { ReferralPage } from "@/pages/ReferralPage";
 import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
@@ -58,7 +58,7 @@ export const router = createBrowserRouter([
       { path: "/signup", Component: SignupPage },
       {
         path: "/email-confirmation",
-        Component: SendVerificationPage,
+        Component: EmailConfirmationPage,
       },
       {
         path: "/verify-success",
@@ -66,7 +66,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/submit-lead",
-        Component: LeadsPage,
+        Component: SubmitLeadPage,
       },
       {
         path: "/sales",

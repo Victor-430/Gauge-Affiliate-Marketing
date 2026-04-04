@@ -15,9 +15,15 @@ export const ProtectedRoute = ({ allowedRole }: ProtectedRouteProps) => {
   const hasShownEmailVerification = useRef(false);
   const navigate = useNavigate();
 
-  console.log(user?.emailVerified);
-
   const emailVerified = user?.emailVerified;
+
+  useEffect(() => {
+    if (!user) {
+      hasShownWelcome.current = false;
+      hasShownUnauthorized.current = false;
+      hasShownEmailVerification.current = false;
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user && !emailVerified && !hasShownEmailVerification.current) {
@@ -25,7 +31,7 @@ export const ProtectedRoute = ({ allowedRole }: ProtectedRouteProps) => {
       toast.error("Please verify your email before logging in.", {
         position: "top-right",
       });
-      navigate("/email-confirmation", { state: { email: user.email } });
+      navigate("/email-confirmation");
     }
   }, [user, emailVerified]);
 
@@ -51,23 +57,23 @@ export const ProtectedRoute = ({ allowedRole }: ProtectedRouteProps) => {
         position: "top-right",
       });
     }
-  }, [loading, user, role, allowedRole]);
+  }, [loading, user, role, allowedRole, emailVerified]);
 
-  useEffect(() => {
-    if (
-      !loading &&
-      user &&
-      emailVerified &&
-      role &&
-      role === allowedRole &&
-      !hasShownWelcome.current
-    ) {
-      hasShownWelcome.current = true;
-      toast.success("Login successful!", {
-        position: "top-right",
-      });
-    }
-  }, [loading, user, role, allowedRole]);
+  // useEffect(() => {
+  //   if (
+  //     !loading &&
+  //     user &&
+  //     emailVerified &&
+  //     role &&
+  //     role === allowedRole &&
+  //     !hasShownWelcome.current
+  //   ) {
+  //     hasShownWelcome.current = true;
+  //     toast.success("Login successful!", {
+  //       position: "top-right",
+  //     });
+  //   }
+  // }, [loading, user, role, allowedRole, emailVerified]);
 
   if (loading) {
     return (
@@ -80,11 +86,11 @@ export const ProtectedRoute = ({ allowedRole }: ProtectedRouteProps) => {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
+  
   if (!emailVerified) {
     return (
       <Navigate
         to="/email-confirmation"
-        state={{ email: user.email }}
         replace
       />
     );

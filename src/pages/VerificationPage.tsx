@@ -80,7 +80,7 @@ export const VerificationPage = () => {
           <Button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="w-full"
+            className="w-full disabled:bg-gray-400"
           >
             {isRefreshing ? (
               <>
