@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, getIdToken, type User } from "firebase/auth";
 import { auth } from "@/config/FirebaseConfig";
+import { toast } from "sonner";
+import { useNavigate } from "react-router";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -19,9 +21,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  // const navigate = useNavigate()
 
   useEffect(() => {
     const authState = onAuthStateChanged(auth, async (firebaseUser) => {
+      const emailVerified = firebaseUser?.emailVerified;
+      console.log(emailVerified)
+      
       setLoading(true);
 
       if (firebaseUser) {

@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { isValidPhone } from "@/utils/validatePhoneNumber";
 
 const CLIENT_URL = import.meta.env.VITE_CLIENT_URL;
@@ -242,7 +242,14 @@ export const SignupPage = () => {
               disabled={loading}
               className="w-full bg-black text-white  py-6 font-semibold hover:bg-black/85 disabled:bg-gray-400 transition"
             >
-              {loading ? "Registering..." : "Register "}
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <p>Registering...</p>
+                </>
+              ) : (
+                <p>Register</p>
+              )}
             </Button>
           </form>
 

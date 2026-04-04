@@ -31,52 +31,21 @@ export const LoginPage = () => {
     setLoading(true);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password,
-      );
+      await signInWithEmailAndPassword(auth, formData.email, formData.password);
 
-      const user = userCredential.user;
+      // const user = userCredential.user;
 
       // Check if email is verified (skip for admin)
-      if (!user.emailVerified) {
-        toast.error("Please verify your email before logging in.", {
-          position: "top-right",
-        });
-        navigate("/email-confirmation", {state:{email:user.email}}); 
-        // add state, pass user and resend email confirmation using /email-confirmation
-        return;
-      }
+      // if (!user.emailVerified) {
+      //   toast.error("Please verify your email before logging in.", {
+      //     position: "top-right",
+      //   });
+      //   navigate("/email-confirmation", {state:{email:user.email}});
+      //   // add state, pass user and resend email confirmation using /email-confirmation
+      //   // return;
+      // }
 
       navigate("/");
-
-      //   const idToken = await getIdToken(user);
-
-      //   // Get user role from backend
-      //   const response = await fetch(`${API_URL}/role/get-role`, {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({ idToken }),
-      //   });
-
-      //   const data = await response.json();
-
-      //   if (!data?.success) {
-      //     toast.error(data?.error, {
-      //       position: "top-right",
-      //     });
-      //     return;
-      //   }
-
-      //   // Redirect based on role
-      //   if (data.role === "admin") {
-      //     navigate("/admin");
-      //   } else if (data.role === "associate") {
-      //     navigate("/");
-      //   }
     } catch (err) {
       // console.error("Login error:", err);
 

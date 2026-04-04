@@ -7,10 +7,15 @@ export const MainLayout = () => {
   const navigation = useNavigate();
 
   const handleBackButton = () => {
-    navigation(-1);
+    if (isEmailConfirmation) {
+      navigation("/login", { replace: true });
+    } else {
+      navigation(-1);
+    }
   };
 
   const isHome = useMatch("/");
+  const isEmailConfirmation = useMatch("/email-confirmation");
 
   return (
     <div>

@@ -66,7 +66,7 @@ export const LeadsPage = () => {
   useEffect(() => {
     if (ref && !hasVerifiedUrlCode.current) {
       hasVerifiedUrlCode.current = true;
-      setFormData((prev) => ({ ...prev, referralCode: ref }));
+      setFormData((prev) => ({ ...prev, referralCode: ref ?? ""}));
       verifyReferralCode(ref);
     }
   }, [ref, verifyReferralCode]);
