@@ -1,8 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, getIdToken, type User } from "firebase/auth";
 import { auth } from "@/config/FirebaseConfig";
-import { toast } from "sonner";
-import { useNavigate } from "react-router";
+
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
