@@ -31,18 +31,9 @@ export const LoginPage = () => {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      await signInWithEmailAndPassword(auth, formData.email, formData.password)
 
-      const emailVerified = auth.currentUser?.emailVerified;
-
-      if (!emailVerified) {
-        navigate("/email-confirmation");
-      } else {
-        navigate("/");
-        toast.success("Login successful!", {
-          position: "top-right",
-        });
-      }
+      navigate("/");
     } catch (err) {
       // console.error("Login error:", err);
 

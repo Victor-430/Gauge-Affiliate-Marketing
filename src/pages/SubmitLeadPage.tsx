@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { db } from "@/config/FirebaseConfig";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { auth, db } from "@/config/FirebaseConfig";
+import { doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { Loader2 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export const SubmitLeadPage = () => {
@@ -16,60 +15,11 @@ export const SubmitLeadPage = () => {
     contactPhone: "",
     companyName: "",
     industry: "",
-    referralCode: "",
   });
   const [isloading, setIsLoading] = useState(false);
-  const [isValidCode, setIsValidCode] = useState(false);
-  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
-  const [refCode] = useSearchParams();
-  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hasVerifiedUrlCode = useRef(false);
-
-  const ref = refCode.get("ref");
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
-
-  const verifyReferralCode = useCallback(async (code: string) => {
-    if (!code || code.trim() === "") {
-      setIsValidCode(false);
-      return;
-    }
-
-    setIsVerifyingCode(true);
-    try {
-      const associatesRef = collection(db, "associates");
-      const q = query(associatesRef, where("uniqueCode", "==", code));
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        setIsValidCode(true);
-        toast.success("Valid referral code", { position: "top-right" });
-      } else {
-        // console.log("code ran 1");
-        setIsValidCode(false);
-        toast.error("Invalid referral code. Please check and try again", {
-          position: "top-right",
-        });
-        // console.log("code ran 2");
-      }
-    } catch (error) {
-      // console.error("Error verifying code:", error);
-      toast.error("Failed to verify referral code", {
-        position: "top-right",
-      });
-      setIsValidCode(false);
-    } finally {
-      setIsVerifyingCode(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (ref && !hasVerifiedUrlCode.current) {
-      hasVerifiedUrlCode.current = true;
-      setFormData((prev) => ({ ...prev, referralCode: ref ?? ""}));
-      verifyReferralCode(ref);
-    }
-  }, [ref, verifyReferralCode]);
+  const userId = auth.currentUser?.uid;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -79,29 +29,15 @@ export const SubmitLeadPage = () => {
     }));
   };
 
-  const handleReferralCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-
-    if (ref) {
+  useEffect(() => {
+    if (!userId) {
+      toast.error("You must be logged in to submit a lead", {
+        position: "top-right",
+      });
+      setIsLoading(false);
       return;
     }
-    setFormData((prev) => ({
-      ...prev,
-      referralCode: value,
-    }));
-
-    if (debounceTimer.current) {
-      clearTimeout(debounceTimer.current);
-    }
-
-    setIsValidCode(false);
-
-    if (value.length >= 10) {
-      debounceTimer.current = setTimeout(() => {
-        verifyReferralCode(value);
-      }, 500);
-    }
-  };
+  }, []);
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -109,6 +45,17 @@ export const SubmitLeadPage = () => {
 
     try {
       // console.log("Submitting:", formData);
+
+      const associateId = doc(db, "associates", userId!);
+      const querySnapshot = await getDoc(associateId);
+      if (!querySnapshot.exists()) {
+        toast.success("An error occurred while submitting the lead", {
+          position: "top-right",
+        });
+        return;
+      }
+
+      setIsLoading(true);
 
       const res = await fetch(`${API_URL}/leads/submit`, {
         method: "POST",
@@ -122,7 +69,7 @@ export const SubmitLeadPage = () => {
           contactPhone: formData.contactPhone,
           companyName: formData.companyName,
           industry: formData.industry,
-          referralCode: formData.referralCode,
+          userId,
         }),
       });
 
@@ -148,9 +95,6 @@ export const SubmitLeadPage = () => {
         contactRole: "",
         industry: "",
       });
-      setIsValidCode(false);
-      hasVerifiedUrlCode.current = false;
-      // console.log("Form Submitted")
     } catch (error) {
       // console.error("Submit error:", error);
       toast.error("Failed to submit lead", {
@@ -160,14 +104,6 @@ export const SubmitLeadPage = () => {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    return () => {
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
-      }
-    };
-  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50  py-16">
@@ -279,75 +215,9 @@ export const SubmitLeadPage = () => {
             </div>
           </div>
 
-          {/*referral section */}
-          <div>
-            <Label className=" text-sm font-medium text-gray-700 mb-2">
-              Referral Code
-            </Label>
-            <div className="relative">
-              <Input
-                type="text"
-                name="referralCode"
-                value={formData.referralCode}
-                required
-                placeholder="GAM1289FHK"
-                onChange={handleReferralCodeChange}
-                className={`w-full px-4 py-6 ${
-                  isValidCode
-                    ? "border-green-500 focus:ring-green-500"
-                    : formData.referralCode && !isVerifyingCode
-                      ? "border-red-500 focus:ring-red-500"
-                      : ""
-                }`}
-                disabled={isVerifyingCode || !!ref}
-              />
-              {isVerifyingCode && (
-                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 animate-spin text-gray-400" />
-              )}
-              {!isVerifyingCode && formData.referralCode && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  {isValidCode ? (
-                    <svg
-                      className="h-5 w-5 text-green-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      className="h-5 w-5 text-red-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  )}
-                </div>
-              )}
-            </div>
-            {!isValidCode && formData.referralCode && !isVerifyingCode && (
-              <p className="text-xs text-red-500 mt-1">
-                Invalid referral code.
-              </p>
-            )}
-          </div>
-
           <Button
             type="submit"
-            disabled={isloading || isVerifyingCode || !isValidCode}
+            disabled={isloading}
             className="w-full bg-black text-white py-6 font-semibold hover:bg-black/85 disabled:bg-gray-400 transition"
           >
             {isloading ? (
@@ -357,7 +227,6 @@ export const SubmitLeadPage = () => {
               </>
             ) : (
               <p>Submit</p>
-              
             )}
           </Button>
         </form>

@@ -59,21 +59,21 @@ export const ProtectedRoute = ({ allowedRole }: ProtectedRouteProps) => {
     }
   }, [loading, user, role, allowedRole, emailVerified]);
 
-  // useEffect(() => {
-  //   if (
-  //     !loading &&
-  //     user &&
-  //     emailVerified &&
-  //     role &&
-  //     role === allowedRole &&
-  //     !hasShownWelcome.current
-  //   ) {
-  //     hasShownWelcome.current = true;
-  //     toast.success("Login successful!", {
-  //       position: "top-right",
-  //     });
-  //   }
-  // }, [loading, user, role, allowedRole, emailVerified]);
+  useEffect(() => {
+    if (
+      !loading &&
+      user &&
+      emailVerified &&
+      role &&
+      role === allowedRole &&
+      !hasShownWelcome.current
+    ) {
+      hasShownWelcome.current = true;
+      toast.success("Login successful!", {
+        position: "top-right",
+      });
+    }
+  }, [loading, user, role, allowedRole, emailVerified]);
 
   if (loading) {
     return (

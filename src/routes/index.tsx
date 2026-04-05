@@ -3,7 +3,7 @@ import { SignupPage } from "@/pages/SignupPage";
 import { SubmitLeadPage } from "@/pages/SubmitLeadPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { MainLayout } from "@/layouts/MainLayout";
-import { EmailConfirmationPage} from "@/pages/EmailConfirmationPage";
+import { EmailConfirmationPage } from "@/pages/EmailConfirmationPage";
 import { VerificationPage } from "@/pages/VerificationPage";
 import { ReferralPage } from "@/pages/ReferralPage";
 import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
@@ -27,6 +27,10 @@ export const router = createBrowserRouter([
         children: [
           { index: true, Component: AssociateDashboard },
           { path: "leads", Component: AssociateLeads },
+          {
+            path: "submit-lead",
+            Component: SubmitLeadPage,
+          },
         ],
       },
     ],
@@ -43,6 +47,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, Component: AdminDashboard },
           { path: "/admin/leads", Component: AdminDashboard },
+
           { path: "/admin/reports", Component: AdminDashboard },
         ],
       },
@@ -64,10 +69,8 @@ export const router = createBrowserRouter([
         path: "/verify-success",
         Component: VerificationPage,
       },
-      {
-        path: "/submit-lead",
-        Component: SubmitLeadPage,
-      },
+      { path: "/referral", Component: ReferralPage },
+
       {
         path: "/sales",
         Component: ReferralPage,

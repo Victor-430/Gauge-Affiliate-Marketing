@@ -6,13 +6,17 @@ export const Navbar = () => {
   const isSignupPage = useMatch("/signup");
   const isVerifySuccess = useMatch("/verify-success")
   const isEmailConfirmation = useMatch("/email-confirmation")
+  const isReferral = useMatch("/referral")
+
 
   const handleLogin = () => {
     navigation("/login");
   };
+
   const handleSignup = () => {
     navigation("/signup");
   };
+
 
   return (
     <div className="w-full h-16 bg-primary font-sans text-white flex items-center py-2 justify-between px-8  ">
@@ -22,7 +26,7 @@ export const Navbar = () => {
         className="bg-transparent w-24 "
       />
 
-      { !isVerifySuccess && !isEmailConfirmation &&
+      { !isVerifySuccess && !isEmailConfirmation && !isReferral &&
         (isSignupPage ? (
           <Button
             onClick={handleLogin}

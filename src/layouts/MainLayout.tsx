@@ -16,11 +16,13 @@ export const MainLayout = () => {
 
   const isHome = useMatch("/");
   const isEmailConfirmation = useMatch("/email-confirmation");
+    const isReferral = useMatch("/referral")
+
 
   return (
     <div>
       <Navbar />
-      {!isHome && (
+      {!isHome && !isReferral &&(
         <Button
           onClick={handleBackButton}
           className="bg-black hover:bg-black/85 text-white font-sans mx-8 my-4 sm:my-6 md:my-8 absolute "
