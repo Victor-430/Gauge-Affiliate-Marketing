@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth, db } from "@/config/FirebaseConfig";
-import { doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { doc, getDoc} from "firebase/firestore";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
