@@ -3,13 +3,14 @@ import { useAuth } from "@/context/loginAuthContext";
 import { Loader2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { auth } from "@/config/FirebaseConfig";
 
 interface ProtectedRouteProps {
   allowedRole: "admin" | "associate";
 }
 
 export const ProtectedRoute = ({ allowedRole }: ProtectedRouteProps) => {
-  const { user, role, loading } = useAuth();
+  const { user, role, loading, logout } = useAuth();
   const hasShownUnauthorized = useRef(false);
   const hasShownWelcome = useRef(false);
   const hasShownEmailVerification = useRef(false);
@@ -26,14 +27,21 @@ export const ProtectedRoute = ({ allowedRole }: ProtectedRouteProps) => {
   }, [user]);
 
   useEffect(() => {
-    if (user && !emailVerified && !hasShownEmailVerification.current) {
-      hasShownEmailVerification.current = true;
-      toast.error("Please verify your email before logging in.", {
-        position: "top-right",
-      });
-      navigate("/email-confirmation");
+    const handleUnverifiedEmail = async() => {
+
+      if (user && !emailVerified && !hasShownEmailVerification.current) {
+        hasShownEmailVerification.current = true;
+        toast.error("Please verify your email before logging in.", {
+          position: "top-right",
+        });
+        await logout()
+        navigate("/email-confirmation");
+      }
+
     }
-  }, [user, emailVerified]);
+
+    handleUnverifiedEmail()
+  }, [user, emailVerified, logout]);
 
   // console.log("🛡️ ProtectedRoute render:", {
   //   user: !!user,
