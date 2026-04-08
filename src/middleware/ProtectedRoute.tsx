@@ -3,7 +3,6 @@ import { useAuth } from "@/context/loginAuthContext";
 import { Loader2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { auth } from "@/config/FirebaseConfig";
 
 interface ProtectedRouteProps {
   allowedRole: "admin" | "associate";
