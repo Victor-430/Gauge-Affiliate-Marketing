@@ -14,7 +14,6 @@ import { toast } from "sonner";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { isValidPhone } from "@/utils/validatePhoneNumber";
 
-const CLIENT_URL = import.meta.env.VITE_CLIENT_URL;
 
 export const SignupPage = () => {
   const navigate = useNavigate();
