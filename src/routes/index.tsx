@@ -4,7 +4,6 @@ import { SubmitLeadPage } from "@/pages/SubmitLeadPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { MainLayout } from "@/layouts/MainLayout";
 import { EmailConfirmationPage } from "@/pages/EmailConfirmationPage";
-import { VerificationPage } from "@/pages/VerificationPage";
 import { ReferralPage } from "@/pages/ReferralPage";
 import { UnauthorizedPage } from "@/pages/UnauthorizedPage";
 import { ProtectedRoute } from "@/middleware/ProtectedRoute";
@@ -14,6 +13,7 @@ import AssociateLeads from "@/pages/dashboards/associate/AssociateLead";
 import { DashboardLayout } from "@/pages/dashboards/components/DashboardLayout";
 import { LoginPage } from "@/pages/LoginPage";
 import { ErrorBoundaryPage } from "@/pages/ErrorBoundaryPage";
+import {VerifyEmailPage} from "@/pages/VerifyEmailPage";
 
 export const router = createBrowserRouter([
   // associate route
@@ -65,9 +65,13 @@ export const router = createBrowserRouter([
         path: "/email-confirmation",
         Component: EmailConfirmationPage,
       },
+      // {
+      //   path: "/verify-email",
+      //   Component: VerificationPage,
+      // },
       {
-        path: "/verify-success",
-        Component: VerificationPage,
+        path: "/verify-email",
+        Component: VerifyEmailPage,
       },
       { path: "/referral", Component: ReferralPage },
 

@@ -86,9 +86,7 @@ export const SignupPage = () => {
         registrationDate: serverTimestamp(),
       });
 
-      await sendEmailVerification(user, {
-        url: `${CLIENT_URL}/verify-success`,
-      });
+      await sendEmailVerification(user);
 
       toast.success(
         "Account created. Please check your email to verify your account",
@@ -96,7 +94,7 @@ export const SignupPage = () => {
       );
 
       navigate("/email-confirmation", {
-        state: { fromSignup:true},
+        state: { fromSignup: true },
       });
 
       setFormData({ email: "", fullName: "", phone: "", password: "" });

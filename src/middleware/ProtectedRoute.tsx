@@ -1,7 +1,7 @@
 import { Navigate, Outlet, useNavigate } from "react-router";
 import { useAuth } from "@/context/loginAuthContext";
 import { Loader2 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import {  useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 interface ProtectedRouteProps {
@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ allowedRole }: ProtectedRouteProps) => {
-  const { user, role, loading, logout } = useAuth();
+  const { user, role, loading } = useAuth();
   const hasShownUnauthorized = useRef(false);
   const hasShownWelcome = useRef(false);
   const hasShownEmailVerification = useRef(false);
@@ -25,22 +25,32 @@ export const ProtectedRoute = ({ allowedRole }: ProtectedRouteProps) => {
     }
   }, [user]);
 
-  useEffect(() => {
-    const handleUnverifiedEmail = async() => {
 
+  useEffect(() => {
+    
+    const handleUnverifiedEmail = async() => {
+  // console.log("user object : ", user)
+  //     console.log("Checking email verification status:", {
+  //       user: !!user,
+  //       emailVerified,
+  //       hasShownEmailVerification: hasShownEmailVerification.current,
+  //     });
+  
       if (user && !emailVerified && !hasShownEmailVerification.current) {
+        // console.log("User email is not verified. Redirecting to email confirmation page.");
         hasShownEmailVerification.current = true;
         toast.error("Please verify your email before logging in.", {
           position: "top-right",
         });
-        await logout()
-        navigate("/email-confirmation");
+        
+        // logout()
+        navigate("/email-confirmation", {replace:true});
       }
-
+  
     }
 
     handleUnverifiedEmail()
-  }, [user, emailVerified, logout]);
+  }, [user, emailVerified,]);
 
   // console.log("🛡️ ProtectedRoute render:", {
   //   user: !!user,
@@ -94,14 +104,14 @@ export const ProtectedRoute = ({ allowedRole }: ProtectedRouteProps) => {
     return <Navigate to="/login" replace />;
   }
   
-  if (!emailVerified) {
-    return (
-      <Navigate
-        to="/email-confirmation"
-        replace
-      />
-    );
-  }
+  // if (!emailVerified) {
+  //   return (
+  //     <Navigate
+  //       to="/email-confirmation"
+  //       replace
+  //     />
+  //   );
+  // }
   if (role !== allowedRole) {
     // console.log(allowedRole)
     // console.log(role)

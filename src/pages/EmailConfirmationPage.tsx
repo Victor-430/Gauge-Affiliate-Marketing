@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { auth } from "@/config/FirebaseConfig";
 import { sendEmailVerification } from "firebase/auth";
-import { useEffect, useState } from "react";
-import {useNavigate } from "react-router";
+import { useState } from "react";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 export const EmailConfirmationPage = () => {
@@ -13,49 +13,8 @@ export const EmailConfirmationPage = () => {
   const [resending, setResending] = useState(false);
   const user = auth.currentUser;
   const userEmail = user?.email ?? "";
-  // const [emailSent, setEmailSent] = useState(false);
 
-  const CLIENT_URL = import.meta.env.VITE_CLIENT_URL;
-
-  // useEffect(() => {
-  //   const shouldAutoSend =
-  //     user && !user.emailVerified && !emailSent && !fromSignup;
-
-  //   if (!shouldAutoSend) return;
-
-  //   const autoSend = async () => {
-  //     try {
-  //       setEmailSent(true);
-  //       await sendEmailVerification(user, {
-  //         url: `${CLIENT_URL}/verify-success`,
-  //       });
-  //       toast.success("Verification email has been sent to your inbox", {
-  //         position: "top-right",
-  //       });
-  //     } catch (err) {
-  //       setEmailSent(false);
-  //       if (
-  //         err instanceof Error &&
-  //         "code" in err &&
-  //         err.code === "auth/too-many-requests"
-  //       ) {
-  //         toast.info(
-  //           "Verification email was already sent recently. Please check your inbox/spam.",
-  //           {
-  //             position: "top-right",
-  //           },
-  //         );
-  //       } else {
-  //         // console.error(err);
-  //         toast.error(
-  //           "Failed to send verification email. Click the resend button",
-  //         );
-  //       }
-  //     }
-  //   };
-
-  //   autoSend();
-  // }, [user, fromSignup, emailSent]);
+  // const CLIENT_URL = import.meta.env.VITE_CLIENT_URL;
 
   const handleEmailResend = async () => {
     if (!user) {
@@ -68,13 +27,10 @@ export const EmailConfirmationPage = () => {
 
     setResending(true);
     try {
-      // setEmailSent(true);
-      await sendEmailVerification(user, {
-        url: `${CLIENT_URL}/verify-success`,
-      });
+      await sendEmailVerification(user);
+
       toast.success("Verification Email Resent", { position: "top-right" });
     } catch (err) {
-      // setEmailSent(false);
       if (
         err instanceof Error &&
         "code" in err &&
@@ -96,12 +52,6 @@ export const EmailConfirmationPage = () => {
       setResending(false);
     }
   };
-
-  useEffect(() => {
-    if (!user) {
-      navigate("/signup", { replace: true });
-    }
-  }, [user, navigate]);
 
   return (
     <div className="mt-8 py-12 md:py-16">
