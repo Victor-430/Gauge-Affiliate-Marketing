@@ -52,7 +52,7 @@ export const ProtectedRoute = ({ allowedRole }: ProtectedRouteProps) => {
     handleUnverifiedEmail()
   }, [user, emailVerified,]);
 
-  // console.log("🛡️ ProtectedRoute render:", {
+  // console.log(" ProtectedRoute render:", {
   //   user: !!user,
   //   role,
   //   loading,
@@ -104,14 +104,14 @@ export const ProtectedRoute = ({ allowedRole }: ProtectedRouteProps) => {
     return <Navigate to="/login" replace />;
   }
   
-  // if (!emailVerified) {
-  //   return (
-  //     <Navigate
-  //       to="/email-confirmation"
-  //       replace
-  //     />
-  //   );
-  // }
+  if (!emailVerified) {
+    return (
+      <Navigate
+        to="/email-confirmation"
+        replace
+      />
+    );
+  }
   if (role !== allowedRole) {
     // console.log(allowedRole)
     // console.log(role)

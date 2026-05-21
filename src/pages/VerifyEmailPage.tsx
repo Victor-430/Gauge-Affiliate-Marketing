@@ -24,9 +24,6 @@ export const VerifyEmailPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // check if link has code else don't do anything and just check current user status
-  // if verification page showed link expired or used and user resend verification email, i get failed to activate account from useAuth
-
   useAuthActiviation();
 
   useEffect(() => {
@@ -38,14 +35,11 @@ export const VerifyEmailPage = () => {
         try {
           await applyActionCode(auth, actionCode);
 
+          setIsVerified(true);
+          
           const user = auth.currentUser;
           if (user) {
             await user.reload();
-            setIsVerified(true);
-          } else {
-            setVerificationError(
-              "Please log in to complete email verification.",
-            );
           }
         } catch (err) {
           // console.error("Error verifying email:", error);
@@ -150,9 +144,11 @@ export const VerifyEmailPage = () => {
     } catch (err) {
       // console.error("Error resending email:", error);
 
-      if (err instanceof Error &&
+      if (
+        err instanceof Error &&
         "code" in err &&
-        err.code=== "auth/too-many-requests") {
+        err.code === "auth/too-many-requests"
+      ) {
         toast.error(
           "Too many requests. Please wait a few minutes before trying again.",
           {
@@ -182,103 +178,102 @@ export const VerifyEmailPage = () => {
 
   return (
     <div className="mt-4">
+      <div className="flex items-center justify-center min-h-[80vh] md:min-h-screen font-sans px-4">
+        {isVerified ? (
+          <Card className="w-full md:w-3/4 max-w-xl px-8 py-16">
+            <div className="text-center">
+              <div className="mx-auto mb-4 h-16 w-16 rounded-full flex items-center justify-center">
+                <CheckCircle2 className="md:h-12 md:w-12 w-8 h-8 text-black" />
+              </div>
 
+              <h2 className="text-xl md:text-2xl font-semibold mb-4">
+                Email Verified Successfully!
+              </h2>
 
-    <div className="flex items-center justify-center min-h-[80vh] md:min-h-screen font-sans px-4">
-      {isVerified ? (
-        <Card className="w-full md:w-3/4 max-w-xl px-8 py-16">
-          <div className="text-center">
-            <div className="mx-auto mb-4 h-16 w-16 rounded-full flex items-center justify-center">
-              <CheckCircle2 className="md:h-12 md:w-12 w-8 h-8 text-black" />
-            </div>
+              <p className="text-gray-600 mb-6">
+                Your account is now active. An email has been sent to your mail
+              </p>
 
-            <h2 className="text-xl md:text-2xl font-semibold mb-4">
-              Email Verified Successfully!
-            </h2>
-
-            <p className="text-gray-600 mb-6">
-              Your account is now active. An email has been sent to your mail
-            </p>
-
-            <Button onClick={handleLogin} className="w-full">
-              Continue to Login
-            </Button>
-          </div>
-        </Card>
-      ) : (
-        <Card className="w-full md:w-3/4 max-w-xl px-4 md:px-8 py-8 md:py-16">
-          <div className="text-center">
-            <div className="mx-auto mb-4 h-16 w-16 rounded-full flex items-center justify-center">
-              <Mail className="md:h-12 md:w-12 w-8 h-8 text-black" />
-            </div>
-
-            <h2 className="text-lg md:text-2xl font-semibold mb-4">
-              Verify Your Email Address
-            </h2>
-
-            {verificationError ? (
-              <Alert variant="destructive" className="mb-6 text-left">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{verificationError}</AlertDescription>
-              </Alert>
-            ) : (
-              <>
-                <p className="text-gray-600 mb-2">
-                  We've sent a verification email to{" "}
-                  <strong className="text-gray-800">
-                    {auth.currentUser?.email}
-                  </strong>
-                </p>
-                <p className="text-sm text-gray-500 mb-6">
-                  Click the link in the email to verify your account.
-                </p>
-              </>
-            )}
-
-            <div className="space-y-3">
-              <Button
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                variant="default"
-                className="w-full"
-              >
-                {isRefreshing ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Checking...
-                  </>
-                ) : (
-                  "I've Verified My Email"
-                )}
-              </Button>
-
-              <Button
-                onClick={handleResendEmail}
-                disabled={isResending}
-                variant="outline"
-                className="w-full"
-              >
-                {isResending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <Mail className="mr-2 h-4 w-4" />
-                    Resend Verification Email
-                  </>
-                )}
+              <Button onClick={handleLogin} className="w-full">
+                Continue to Login
               </Button>
             </div>
+          </Card>
+        ) : (
+          <Card className="w-full md:w-3/4 max-w-xl px-4 md:px-8 py-8 md:py-16">
+            <div className="text-center">
+              <div className="mx-auto mb-4 h-16 w-16 rounded-full flex items-center justify-center">
+                <Mail className="md:h-12 md:w-12 w-8 h-8 text-black" />
+              </div>
 
-            <p className="text-xs text-gray-500 mt-6">
-              Didn't receive the email? Check your spam folder or click resend.
-            </p>
-          </div>
-        </Card>
-      )}
-    </div>
+              <h2 className="text-lg md:text-2xl font-semibold mb-4">
+                Verify Your Email Address
+              </h2>
+
+              {verificationError ? (
+                <Alert variant="destructive" className="mb-6 text-left">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{verificationError}</AlertDescription>
+                </Alert>
+              ) : (
+                <>
+                  <p className="text-gray-600 mb-2">
+                    We've sent a verification email to{" "}
+                    <strong className="text-gray-800">
+                      {auth.currentUser?.email}
+                    </strong>
+                  </p>
+                  <p className="text-sm text-gray-500 mb-6">
+                    Click the link in the email to verify your account.
+                  </p>
+                </>
+              )}
+
+              <div className="space-y-3">
+                <Button
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
+                  variant="default"
+                  className="w-full"
+                >
+                  {isRefreshing ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Checking...
+                    </>
+                  ) : (
+                    "I've Verified My Email"
+                  )}
+                </Button>
+
+                <Button
+                  onClick={handleResendEmail}
+                  disabled={isResending}
+                  variant="outline"
+                  className="w-full"
+                >
+                  {isResending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="mr-2 h-4 w-4" />
+                      Resend Verification Email
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              <p className="text-xs text-gray-500 mt-6">
+                Didn't receive the email? Check your spam folder or click
+                resend.
+              </p>
+            </div>
+          </Card>
+        )}
+      </div>
     </div>
   );
 };

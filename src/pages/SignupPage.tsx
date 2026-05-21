@@ -54,8 +54,7 @@ export const SignupPage = () => {
 
       const user = userCredential.user;
       const userName = formData.fullName.split(" ")[0];
-      const emailVerified = user.emailVerified
-
+      const emailVerified = user.emailVerified;
 
       const formatPhone = isValidPhone(formData.phone);
 
@@ -65,7 +64,7 @@ export const SignupPage = () => {
       //   formatPhone = "0" + formatPhone.substring(4);
       // }
 
-      await Promise.all([
+      const userRegistration = await Promise.allSettled([
         updateProfile(user, {
           displayName: userName,
         }),
@@ -87,6 +86,19 @@ export const SignupPage = () => {
 
         sendEmailVerification(user),
       ]);
+
+      const [profileResult, firestoreResult, emailVerificationResult] =
+        userRegistration;
+
+      if (firestoreResult.status === "rejected") {
+        localStorage.setItem("pendingFirestoreSetup", "true");
+      }
+      if (profileResult.status === "rejected") {
+        localStorage.setItem("pendingProfileSetup", "true");
+      }
+      if (emailVerificationResult.status === "rejected") {
+        localStorage.setItem("pendingEmailVerification", "true");
+      }
 
       toast.success(
         "Account created. Please check your email to verify your account",

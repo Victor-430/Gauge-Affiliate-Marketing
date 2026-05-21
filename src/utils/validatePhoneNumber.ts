@@ -1,4 +1,4 @@
-export const isValidPhone = (phone: string): boolean => {
+export const isValidPhone = (phone: string): string | null => {
   let cleaned = phone.replace(/[\s()-]/g, "");
 
   if (cleaned.startsWith("+234")) {
@@ -7,7 +7,6 @@ export const isValidPhone = (phone: string): boolean => {
     cleaned = `0${cleaned.slice(3)}`;
   }
 
-  return /^0\d{10}$/.test(cleaned);
+  return /^0\d{10}$/.test(cleaned) ? cleaned : null;
 };
-
 

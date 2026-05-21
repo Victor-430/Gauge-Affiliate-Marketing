@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth } from "@/config/FirebaseConfig";
+import { retryPendingSignup } from "@/utils/retryPendingSignup";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -31,7 +32,22 @@ export const LoginPage = () => {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, formData.email, formData.password)
+      const userCredentials = await signInWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password,
+      );
+      const user = userCredentials.user;
+
+      await retryPendingSignup();
+
+      const idToken = await user.getIdToken();
+      
+      await fetch(`${import.meta.env.VITE_API_URL}/associate/activate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
 
       navigate("/");
     } catch (err) {
