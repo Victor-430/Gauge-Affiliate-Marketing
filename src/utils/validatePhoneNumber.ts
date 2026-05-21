@@ -1,7 +1,13 @@
 export const isValidPhone = (phone: string): boolean => {
-  let formatPhone = phone.replace(/[\-+]/g, '');
-    if (formatPhone.startsWith('+234')) {
-    formatPhone = '0' + formatPhone.substring(4);
+  let cleaned = phone.replace(/[\s()-]/g, "");
+
+  if (cleaned.startsWith("+234")) {
+    cleaned = `0${cleaned.slice(4)}`;
+  } else if (cleaned.startsWith("234")) {
+    cleaned = `0${cleaned.slice(3)}`;
   }
-  return /^\d{11}$/.test(formatPhone);
+
+  return /^0\d{10}$/.test(cleaned);
 };
+
+

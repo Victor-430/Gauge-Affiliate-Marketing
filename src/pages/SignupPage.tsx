@@ -14,7 +14,6 @@ import { toast } from "sonner";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { isValidPhone } from "@/utils/validatePhoneNumber";
 
-
 export const SignupPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<AssociateFormData>({
@@ -46,8 +45,6 @@ export const SignupPage = () => {
       return;
     }
     setLoading(true);
-    // console.log("Creating User");
-
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -57,44 +54,46 @@ export const SignupPage = () => {
 
       const user = userCredential.user;
       const userName = formData.fullName.split(" ")[0];
+      const emailVerified = user.emailVerified
 
-      //  update user profile with the first name
-      await updateProfile(user, {
-        displayName: userName,
-      });
 
-      let formatPhone = formData.phone.replace(/[\s\-+]/g, "");
+      const formatPhone = isValidPhone(formData.phone);
 
-      if (formatPhone.startsWith("+234")) {
-        formatPhone = "0" + formatPhone.substring(4);
-      }
+      // formData.phone.replace(/[\s\-+]/g, "");
 
-      await setDoc(doc(db, "associates", user.uid), {
-        email: formData.email,
-        fullName: formData.fullName,
-        phone: formatPhone,
-        status: "pending",
-        emailVerified: false,
-        stats: {
-          totalLeads: 0,
-          convertedLeads: 0,
-          closedDeals: 0,
-          rejectedDeals: 0,
-          pendingDeals: 0,
-        },
-        registrationDate: serverTimestamp(),
-      });
+      // if (formatPhone.startsWith("+234")) {
+      //   formatPhone = "0" + formatPhone.substring(4);
+      // }
 
-      await sendEmailVerification(user);
+      await Promise.all([
+        updateProfile(user, {
+          displayName: userName,
+        }),
+        setDoc(doc(db, "associates", user.uid), {
+          email: formData.email,
+          fullName: formData.fullName,
+          phone: formatPhone,
+          status: "pending",
+          emailVerified,
+          // stats: {
+          //   totalLeads: 0,
+          //   convertedLeads: 0,
+          //   closedDeals: 0,
+          //   rejectedDeals: 0,
+          //   pendingDeals: 0,
+          // },
+          registrationDate: serverTimestamp(),
+        }),
+
+        sendEmailVerification(user),
+      ]);
 
       toast.success(
         "Account created. Please check your email to verify your account",
         { position: "top-right" },
       );
 
-      navigate("/email-confirmation", {
-        state: { fromSignup: true },
-      });
+      navigate("/email-confirmation");
 
       setFormData({ email: "", fullName: "", phone: "", password: "" });
     } catch (err) {
@@ -149,7 +148,6 @@ export const SignupPage = () => {
       }
     } finally {
       setLoading(false);
-      // console.log("=== SUBMISSION ENDED ===");
     }
   };
 
