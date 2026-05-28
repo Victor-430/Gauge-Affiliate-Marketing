@@ -15,12 +15,14 @@ import type { Comment, CommentRevision } from "@/types/Comment";
 export default function AssociateLeadDetails() {
   const { leadId } = useParams();
   const navigate = useNavigate();
-  const { leads, isLoading, error } = useAssociateData();
+  const { leads, isLoading, error, updateLatestCommentForLead } = useAssociateData();
   const {
+    addComment,
     fetchComment,
     editComment,
     fetchCommentHistory,
     isFetchingComment,
+    isAddingComment,
     isEditingComment,
     isFetchingHistory,
   } = useComment();
@@ -32,6 +34,7 @@ export default function AssociateLeadDetails() {
 
   const [comment, setComment] = useState<Comment | null>(null);
   const [editedContent, setEditedContent] = useState("");
+  const [newCommentContent, setNewCommentContent] = useState("");
   const [history, setHistory] = useState<CommentRevision[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
 
@@ -67,6 +70,62 @@ export default function AssociateLeadDetails() {
     loadHistory();
   }, [comment?.id, fetchCommentHistory]);
 
+  const syncLatestComment = (latestComment: Comment | null) => {
+    if (!leadId) return;
+
+    setComment(latestComment);
+    setEditedContent(latestComment?.content || "");
+    updateLatestCommentForLead(leadId, latestComment);
+    window.dispatchEvent(
+      new CustomEvent("lead-comment-updated", {
+        detail: {
+          leadId,
+          latestComment,
+        },
+      }),
+    );
+  };
+
+  const handleAddComment = async () => {
+    if (!leadId) return;
+
+    const trimmed = newCommentContent.trim();
+    if (!trimmed) {
+      toast.error("Comment cannot be empty", { position: "top-right" });
+      return;
+    }
+
+    try {
+      const data = await addComment({
+        leadId,
+        content: trimmed,
+      });
+
+      const createdComment = data?.comment as Comment | undefined;
+      if (createdComment) {
+        syncLatestComment(createdComment);
+        const historyData = await fetchCommentHistory(createdComment.id);
+        setHistory(historyData.history || []);
+        setNextCursor(historyData.nextCursor);
+      } else {
+        const latest = await fetchComment(leadId);
+        syncLatestComment(latest);
+        if (latest?.id) {
+          const historyData = await fetchCommentHistory(latest.id);
+          setHistory(historyData.history || []);
+          setNextCursor(historyData.nextCursor);
+        }
+      }
+
+      setNewCommentContent("");
+      toast.success(data?.message || "Comment created", {
+        position: "top-right",
+      });
+    } catch (err) {
+      toast.error("Failed to add comment", { position: "top-right" });
+    }
+  };
+
   const handleSaveComment = async () => {
     if (!comment?.id) return;
     const trimmed = editedContent.trim();
@@ -83,8 +142,7 @@ export default function AssociateLeadDetails() {
 
       if (data?.updated) {
         const refreshed = await fetchComment(leadId || "");
-        setComment(refreshed);
-        setEditedContent(refreshed?.content || "");
+        syncLatestComment(refreshed);
 
         const historyData = await fetchCommentHistory(comment.id);
         setHistory(historyData.history || []);
@@ -200,6 +258,41 @@ export default function AssociateLeadDetails() {
                 {comment.createdByName}
                 {comment.isEdited ? " (edited)" : ""}
               </div>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">No comment yet</p>
+          )}
+
+          <Separator />
+
+          <div className="space-y-2">
+            <p className="text-sm font-medium">{comment ? "Add Another Comment" : "Add Comment"}</p>
+            <textarea
+              value={newCommentContent}
+              onChange={(e) => setNewCommentContent(e.target.value)}
+              className="w-full px-3 py-2 border rounded-md min-h-28 text-sm"
+              placeholder="Write a comment for this lead..."
+            />
+            <div className="flex gap-2">
+              <Button
+                onClick={handleAddComment}
+                disabled={isAddingComment}
+                className="min-w-28"
+              >
+                {isAddingComment ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Adding
+                  </>
+                ) : (
+                  "Add Comment"
+                )}
+              </Button>
+            </div>
+          </div>
+
+          {comment && (
+            <>
               <Separator />
               <div className="space-y-2">
                 <p className="text-sm font-medium">Edit Comment</p>
@@ -233,8 +326,6 @@ export default function AssociateLeadDetails() {
                 </div>
               </div>
             </>
-          ) : (
-            <p className="text-sm text-muted-foreground">No comment yet</p>
           )}
         </CardContent>
       </Card>

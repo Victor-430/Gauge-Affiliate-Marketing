@@ -196,7 +196,7 @@ export default function AssociateLeads() {
                     <TableCell>
                       <DealStatusBadge status={lead?.dealStatus} />
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-sm max-w-[260px] truncate">
+                    <TableCell className="text-muted-foreground text-sm max-w-65 truncate">
                       {lead.latestComment?.content || "No comment yet"}
                     </TableCell>
                     <TableCell className="text-muted-foreground text-sm">

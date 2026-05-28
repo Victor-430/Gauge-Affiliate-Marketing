@@ -4,12 +4,32 @@ import { authFetch } from "@/lib/authFetch";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-interface AddCommentPayload extends LeadForm {
-  userId?: string;
+interface AddCommentPayload {
+  leadId: string;
+  content: string;
 }
 
 interface EditCommentPayload {
   content: string;
+}
+
+interface FetchCommentsResponse {
+  success: boolean;
+  comments: Comment[];
+}
+
+interface CreateCommentResponse {
+  success: boolean;
+  message: string;
+  comment: Comment;
+}
+
+interface EditCommentResponse {
+  success: boolean;
+  message: string;
+  updated: boolean;
+  commentId?: string;
+  newVersion?: number;
 }
 
 const parseErrorMessage = (data: any, fallback: string) => {
@@ -28,7 +48,9 @@ export const useComment = () => {
     setError(null);
 
     try {
-      const { response, data } = await authFetch(`${API_URL}/comments/lead/${leadId}`);
+      const { response, data } = await authFetch<FetchCommentsResponse>(
+        `${API_URL}/comments/lead/${leadId}`,
+      );
 
       if (!response.ok) {
         throw new Error(parseErrorMessage(data, "Failed to fetch comments"));
@@ -52,25 +74,27 @@ export const useComment = () => {
     setError(null);
 
     try {
-      const trimmedComment = payload.comment?.trim();
+      const trimmedContent = payload.content.trim();
 
-      const response = await fetch(`${API_URL}/leads/submit`, {
+      if (!trimmedContent) {
+        throw new Error("Comment cannot be empty");
+      }
+
+      const { response, data } = await authFetch<CreateCommentResponse>(`${API_URL}/comments`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...payload,
-          comment: trimmedComment || undefined,
-        }),
+        json: {
+          leadId: payload.leadId,
+          content: trimmedContent,
+        },
       });
-      const data = await response.json();
 
       if (!response.ok || !data?.success) {
-        throw new Error(parseErrorMessage(data, "Failed to submit lead"));
+        throw new Error(parseErrorMessage(data, "Failed to create comment"));
       }
 
       return data;
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to submit lead";
+      const message = err instanceof Error ? err.message : "Failed to create comment";
       setError(message);
       throw err;
     } finally {
@@ -84,10 +108,13 @@ export const useComment = () => {
       setError(null);
 
       try {
-        const { response, data } = await authFetch(`${API_URL}/comments/${commentId}`, {
+        const { response, data } = await authFetch<EditCommentResponse>(
+          `${API_URL}/comments/${commentId}`,
+          {
           method: "PATCH",
           json: payload,
-        });
+        },
+        );
 
         if (!response.ok || !data?.success) {
           throw new Error(parseErrorMessage(data, "Failed to edit comment"));
@@ -121,7 +148,7 @@ export const useComment = () => {
           query.set("nextCursor", nextCursor);
         }
 
-        const { response, data } = await authFetch(
+        const { response, data } = await authFetch<CommentHistoryResponse>(
           `${API_URL}/comments/${commentId}/history?${query.toString()}`,
         );
 

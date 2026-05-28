@@ -12,7 +12,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useComment } from "./useComment";
 import type { Comment } from "@/types/Comment";
 
@@ -25,6 +25,25 @@ export const useAssociateData = () => {
   const latestCommentMapRef = useRef<Record<string, Comment | null>>({});
   const { fetchComment } = useComment();
 
+  const updateLatestCommentForLead = useCallback(
+    (leadId: string, latestComment: Comment | null) => {
+      if (!leadId) return;
+
+      latestCommentMapRef.current[leadId] = latestComment;
+      setLeads((currentLeads) =>
+        currentLeads.map((lead) =>
+          lead.id === leadId
+            ? {
+                ...lead,
+                latestComment,
+              }
+            : lead,
+        ),
+      );
+    },
+    [],
+  );
+
   useEffect(() => {
     // wait for auth to finish loading
     if (authLoading) {
@@ -35,6 +54,7 @@ export const useAssociateData = () => {
     setError(null);
     setAssociate(null);
     setLeads([]);
+    latestCommentMapRef.current = {};
 
     if (!user) {
       setIsLoading(false);
@@ -109,19 +129,12 @@ export const useAssociateData = () => {
             leadsToHydrate.map(async (lead) => {
               try {
                 const latestComment = await fetchComment(lead.id);
-                latestCommentMapRef.current[lead.id] = latestComment;
+                updateLatestCommentForLead(lead.id, latestComment);
               } catch {
-                latestCommentMapRef.current[lead.id] = null;
+                updateLatestCommentForLead(lead.id, null);
               }
             }),
-          ).then(() => {
-            setLeads((currentLeads) =>
-              currentLeads.map((lead) => ({
-                ...lead,
-                latestComment: latestCommentMapRef.current[lead.id] ?? null,
-              })),
-            );
-          });
+          );
         }
       },
       () => {
@@ -134,8 +147,28 @@ export const useAssociateData = () => {
 
     fetchAssociateData();
 
-    return () => unsubscribe();
-  }, [user, authLoading, fetchComment]);
+    const handleLeadCommentUpdated = (event: Event) => {
+      const customEvent = event as CustomEvent<{
+        leadId?: string;
+        latestComment?: Comment | null;
+      }>;
+
+      const updatedLeadId = customEvent.detail?.leadId;
+      if (!updatedLeadId) return;
+
+      updateLatestCommentForLead(updatedLeadId, customEvent.detail.latestComment ?? null);
+    };
+
+    window.addEventListener("lead-comment-updated", handleLeadCommentUpdated as EventListener);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener(
+        "lead-comment-updated",
+        handleLeadCommentUpdated as EventListener,
+      );
+    };
+  }, [user, authLoading, fetchComment, updateLatestCommentForLead]);
 
   const convertLead = async (leadId: string) => {
     if (!user) throw new Error("User not authenticated");
@@ -182,5 +215,13 @@ export const useAssociateData = () => {
       throw new Error("Failed to undo lead conversion");
     }
   };
-  return { associate, leads, isLoading, error, convertLead, undoConvertedLead };
+  return {
+    associate,
+    leads,
+    isLoading,
+    error,
+    convertLead,
+    undoConvertedLead,
+    updateLatestCommentForLead,
+  };
 };

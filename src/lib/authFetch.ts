@@ -5,7 +5,10 @@ type AuthFetchOptions = RequestInit & {
   json?: unknown;
 };
 
-export const authFetch = async (input: string, options: AuthFetchOptions = {}) => {
+export const authFetch = async <T = unknown>(
+  input: string,
+  options: AuthFetchOptions = {},
+): Promise<{ response: Response; data: T }> => {
   const user = auth.currentUser;
 
   if (!user) {
@@ -28,8 +31,15 @@ export const authFetch = async (input: string, options: AuthFetchOptions = {}) =
   });
 
   const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
 
-  return { response, data };
+  let data: unknown = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = text;
+    }
+  }
+
+  return { response, data: data as T };
 };
-
