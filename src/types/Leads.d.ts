@@ -8,6 +8,7 @@
   contactEmail: string;
   contactPhone: string;
   referralCode?: string;
+  comment?: string;
 }
 
  type LeadStatus = "new" | "converted";
@@ -45,4 +46,5 @@ interface Lead {
   adminNotes?: string;
   proposalSent?: boolean;
   proposalSentAt?: Timestamp;
+  latestComment?: import("./Comment").Comment | null;
 }

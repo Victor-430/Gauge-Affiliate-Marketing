@@ -10,6 +10,7 @@ import { ProtectedRoute } from "@/middleware/ProtectedRoute";
 import { AdminDashboard } from "@/pages/dashboards/admin/AdminDashboard";
 import AssociateDashboard from "@/pages/dashboards/associate/AssociateDashboard";
 import AssociateLeads from "@/pages/dashboards/associate/AssociateLead";
+import AssociateLeadDetails from "@/pages/dashboards/associate/AssociateLeadDetails";
 import { DashboardLayout } from "@/pages/dashboards/components/DashboardLayout";
 import { LoginPage } from "@/pages/LoginPage";
 import { ErrorBoundaryPage } from "@/pages/ErrorBoundaryPage";
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, Component: AssociateDashboard },
           { path: "leads", Component: AssociateLeads },
+          { path: "leads/:leadId", Component: AssociateLeadDetails },
           {
             path: "submit-lead",
             Component: SubmitLeadPage,

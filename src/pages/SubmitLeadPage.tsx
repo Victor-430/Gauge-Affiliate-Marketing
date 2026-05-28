@@ -29,6 +29,14 @@ export const SubmitLeadPage = () => {
     }));
   };
 
+  const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   useEffect(() => {
     if (!userId) {
       toast.error("You must be logged in to submit a lead", {
@@ -69,6 +77,7 @@ export const SubmitLeadPage = () => {
           contactPhone: formData.contactPhone,
           companyName: formData.companyName,
           industry: formData.industry,
+          comment: formData.comment?.trim() || undefined,
           userId,
         }),
       });
@@ -94,6 +103,7 @@ export const SubmitLeadPage = () => {
         companyName: "",
         contactRole: "",
         industry: "",
+        comment: "",
       });
     } catch (error) {
       // console.error("Submit error:", error);
@@ -212,6 +222,24 @@ export const SubmitLeadPage = () => {
                   className="w-full px-4 py-6"
                 />
               </div>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t">
+            <h3 className="text-sm font-semibold text-gray-700 mb-4">
+              Additional Note (Optional)
+            </h3>
+            <div>
+              <Label className=" text-sm font-medium text-gray-700 mb-2">
+                Comment
+              </Label>
+              <textarea
+                name="comment"
+                value={formData.comment || ""}
+                placeholder="Add any extra context for this lead"
+                onChange={handleTextAreaChange}
+                className="w-full px-4 py-3 border rounded-md text-sm resize-y min-h-28 focus:outline-none focus:ring-2 focus:ring-black/20"
+              />
             </div>
           </div>
 

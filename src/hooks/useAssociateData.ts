@@ -12,7 +12,9 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useComment } from "./useComment";
+import type { Comment } from "@/types/Comment";
 
 export const useAssociateData = () => {
   const { user, loading: authLoading } = useAuth();
@@ -20,6 +22,8 @@ export const useAssociateData = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const latestCommentMapRef = useRef<Record<string, Comment | null>>({});
+  const { fetchComment } = useComment();
 
   useEffect(() => {
     // wait for auth to finish loading
@@ -87,9 +91,38 @@ export const useAssociateData = () => {
           ...doc.data(),
         })) as Lead[];
 
-        setLeads(leadsData);
+        const hydratedLeads = leadsData.map((lead) => ({
+          ...lead,
+          latestComment: latestCommentMapRef.current[lead.id] ?? null,
+        }));
+
+        setLeads(hydratedLeads);
         leadsInitialized = true;
         checkComplete();
+
+        const leadsToHydrate = hydratedLeads.filter(
+          (lead) => latestCommentMapRef.current[lead.id] === undefined,
+        );
+
+        if (leadsToHydrate.length > 0) {
+          Promise.all(
+            leadsToHydrate.map(async (lead) => {
+              try {
+                const latestComment = await fetchComment(lead.id);
+                latestCommentMapRef.current[lead.id] = latestComment;
+              } catch {
+                latestCommentMapRef.current[lead.id] = null;
+              }
+            }),
+          ).then(() => {
+            setLeads((currentLeads) =>
+              currentLeads.map((lead) => ({
+                ...lead,
+                latestComment: latestCommentMapRef.current[lead.id] ?? null,
+              })),
+            );
+          });
+        }
       },
       () => {
         // console.error("Error fetching leads", err);
@@ -102,7 +135,7 @@ export const useAssociateData = () => {
     fetchAssociateData();
 
     return () => unsubscribe();
-  }, [user, authLoading]);
+  }, [user, authLoading, fetchComment]);
 
   const convertLead = async (leadId: string) => {
     if (!user) throw new Error("User not authenticated");
