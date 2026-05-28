@@ -230,9 +230,6 @@ export const SubmitLeadPage = () => {
               Additional Note (Optional)
             </h3>
             <div>
-              <Label className=" text-sm font-medium text-gray-700 mb-2">
-                Comment
-              </Label>
               <textarea
                 name="comment"
                 value={formData.comment || ""}

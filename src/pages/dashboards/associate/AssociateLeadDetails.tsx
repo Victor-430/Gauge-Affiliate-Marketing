@@ -1,13 +1,24 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
-import { AlertCircle, ArrowLeft, Calendar, Loader2, MessageSquare, User } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Calendar,
+  Edit3,
+  Loader2,
+  MessageSquare,
+  User,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useAssociateData } from "@/hooks/useAssociateData";
+import { useLeadEdit, type LeadEditPayload } from "@/hooks/useLeadEdit";
 import { useComment } from "@/hooks/useComment";
 import { formatFullDate } from "@/utils/FormatDate";
 import type { Comment, CommentRevision } from "@/types/Comment";
@@ -16,6 +27,7 @@ export default function AssociateLeadDetails() {
   const { leadId } = useParams();
   const navigate = useNavigate();
   const { leads, isLoading, error, updateLatestCommentForLead } = useAssociateData();
+  const { editLead, isEditingLead, error: leadEditError } = useLeadEdit();
   const {
     addComment,
     fetchComment,
@@ -32,11 +44,33 @@ export default function AssociateLeadDetails() {
     [leads, leadId],
   );
 
+  const [isEditingLeadInfo, setIsEditingLeadInfo] = useState(false);
+  const [leadForm, setLeadForm] = useState<LeadEditPayload>({
+    companyName: "",
+    industry: "",
+    contactFullName: "",
+    contactRole: "",
+    contactEmail: "",
+    contactPhone: "",
+  });
   const [comment, setComment] = useState<Comment | null>(null);
   const [editedContent, setEditedContent] = useState("");
   const [newCommentContent, setNewCommentContent] = useState("");
   const [history, setHistory] = useState<CommentRevision[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!lead) return;
+
+    setLeadForm({
+      companyName: lead.companyName || "",
+      industry: lead.industry || "",
+      contactFullName: lead.contactFullName || "",
+      contactRole: lead.contactRole || "",
+      contactEmail: lead.contactEmail || "",
+      contactPhone: lead.contactPhone || "",
+    });
+  }, [lead?.id]);
 
   useEffect(() => {
     const loadComment = async () => {
@@ -46,7 +80,7 @@ export default function AssociateLeadDetails() {
         const latest = await fetchComment(leadId);
         setComment(latest);
         setEditedContent(latest?.content || "");
-      } catch (err) {
+      } catch {
         toast.error("Failed to load comment", { position: "top-right" });
       }
     };
@@ -62,7 +96,7 @@ export default function AssociateLeadDetails() {
         const data = await fetchCommentHistory(comment.id);
         setHistory(data.history || []);
         setNextCursor(data.nextCursor);
-      } catch (err) {
+      } catch {
         toast.error("Failed to load comment history", { position: "top-right" });
       }
     };
@@ -84,6 +118,70 @@ export default function AssociateLeadDetails() {
         },
       }),
     );
+  };
+
+  const handleLeadFieldChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setLeadForm((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
+
+  const openEditLead = () => {
+    if (!lead) return;
+
+    setLeadForm({
+      companyName: lead.companyName || "",
+      industry: lead.industry || "",
+      contactFullName: lead.contactFullName || "",
+      contactRole: lead.contactRole || "",
+      contactEmail: lead.contactEmail || "",
+      contactPhone: lead.contactPhone || "",
+    });
+    setIsEditingLeadInfo(true);
+  };
+
+  const cancelEditLead = () => {
+    if (!lead) return;
+
+    setLeadForm({
+      companyName: lead.companyName || "",
+      industry: lead.industry || "",
+      contactFullName: lead.contactFullName || "",
+      contactRole: lead.contactRole || "",
+      contactEmail: lead.contactEmail || "",
+      contactPhone: lead.contactPhone || "",
+    });
+    setIsEditingLeadInfo(false);
+  };
+
+  const handleSaveLead = async () => {
+    if (!leadId) return;
+
+    const payload: LeadEditPayload = {
+      companyName: leadForm.companyName.trim(),
+      industry: leadForm.industry.trim(),
+      contactFullName: leadForm.contactFullName.trim(),
+      contactRole: leadForm.contactRole.trim(),
+      contactEmail: leadForm.contactEmail.trim(),
+      contactPhone: leadForm.contactPhone.trim(),
+    };
+
+    if (Object.values(payload).some((value) => !value)) {
+      toast.error("Please fill in all lead fields", { position: "top-right" });
+      return;
+    }
+
+    try {
+      const result = await editLead(leadId, payload);
+      toast.success(result?.message || "Lead updated successfully", {
+        position: "top-right",
+      });
+      setIsEditingLeadInfo(false);
+    } catch {
+      toast.error("Failed to update lead", { position: "top-right" });
+    }
   };
 
   const handleAddComment = async () => {
@@ -121,7 +219,7 @@ export default function AssociateLeadDetails() {
       toast.success(data?.message || "Comment created", {
         position: "top-right",
       });
-    } catch (err) {
+    } catch {
       toast.error("Failed to add comment", { position: "top-right" });
     }
   };
@@ -152,7 +250,7 @@ export default function AssociateLeadDetails() {
       toast.success(data?.message || "Comment updated", {
         position: "top-right",
       });
-    } catch (err) {
+    } catch {
       toast.error("Failed to update comment", { position: "top-right" });
     }
   };
@@ -164,7 +262,7 @@ export default function AssociateLeadDetails() {
       const data = await fetchCommentHistory(comment.id, nextCursor, 50);
       setHistory((prev) => [...prev, ...(data.history || [])]);
       setNextCursor(data.nextCursor);
-    } catch (err) {
+    } catch {
       toast.error("Failed to load more history", { position: "top-right" });
     }
   };
@@ -210,28 +308,123 @@ export default function AssociateLeadDetails() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+          <CardTitle className="flex items-center justify-between gap-4">
             <span>{lead.companyName}</span>
-            <Badge>{lead.leadStatus}</Badge>
+            <div className="flex items-center gap-2">
+              <Badge>{lead.leadStatus}</Badge>
+              {!isEditingLeadInfo && (
+                <Button variant="outline" size="sm" onClick={openEditLead}>
+                  <Edit3 className="h-4 w-4 mr-2" />
+                  Edit Lead
+                </Button>
+              )}
+            </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <p>
-            <strong>Industry:</strong> {lead.industry}
-          </p>
-          <p>
-            <strong>Contact:</strong> {lead.contactFullName} ({lead.contactRole})
-          </p>
-          <p>
-            <strong>Email:</strong> {lead.contactEmail}
-          </p>
-          <p>
-            <strong>Phone:</strong> {lead.contactPhone}
-          </p>
-          <p className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            Submitted: {formatFullDate(lead.submittedAt)}
-          </p>
+        <CardContent className="space-y-4">
+          {isEditingLeadInfo ? (
+            <div className="space-y-4">
+              {leadEditError ? (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{leadEditError}</AlertDescription>
+                </Alert>
+              ) : null}
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="companyName">Company Name</Label>
+                  <Input
+                    id="companyName"
+                    name="companyName"
+                    value={leadForm.companyName}
+                    onChange={handleLeadFieldChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="industry">Industry</Label>
+                  <Input
+                    id="industry"
+                    name="industry"
+                    value={leadForm.industry}
+                    onChange={handleLeadFieldChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contactFullName">Contact Full Name</Label>
+                  <Input
+                    id="contactFullName"
+                    name="contactFullName"
+                    value={leadForm.contactFullName}
+                    onChange={handleLeadFieldChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contactRole">Contact Role</Label>
+                  <Input
+                    id="contactRole"
+                    name="contactRole"
+                    value={leadForm.contactRole}
+                    onChange={handleLeadFieldChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contactEmail">Contact Email</Label>
+                  <Input
+                    id="contactEmail"
+                    name="contactEmail"
+                    type="email"
+                    value={leadForm.contactEmail}
+                    onChange={handleLeadFieldChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contactPhone">Contact Phone</Label>
+                  <Input
+                    id="contactPhone"
+                    name="contactPhone"
+                    value={leadForm.contactPhone}
+                    onChange={handleLeadFieldChange}
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button onClick={handleSaveLead} disabled={isEditingLead}>
+                  {isEditingLead ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      Saving
+                    </>
+                  ) : (
+                    "Save Lead"
+                  )}
+                </Button>
+                <Button variant="outline" onClick={cancelEditLead} disabled={isEditingLead}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p>
+                <strong>Industry:</strong> {lead.industry}
+              </p>
+              <p>
+                <strong>Contact:</strong> {lead.contactFullName} ({lead.contactRole})
+              </p>
+              <p>
+                <strong>Email:</strong> {lead.contactEmail}
+              </p>
+              <p>
+                <strong>Phone:</strong> {lead.contactPhone}
+              </p>
+              <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Calendar className="h-4 w-4" />
+                Submitted: {formatFullDate(lead.submittedAt)}
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -266,7 +459,9 @@ export default function AssociateLeadDetails() {
           <Separator />
 
           <div className="space-y-2">
-            <p className="text-sm font-medium">{comment ? "Add Another Comment" : "Add Comment"}</p>
+            <p className="text-sm font-medium">
+              {comment ? "Add Another Comment" : "Add Comment"}
+            </p>
             <textarea
               value={newCommentContent}
               onChange={(e) => setNewCommentContent(e.target.value)}
