@@ -429,35 +429,8 @@ export default function AssociateLeadDetails() {
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5" />
-            Comment
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {isFetchingComment ? (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Loading comment...
-            </div>
-          ) : comment ? (
-            <>
-              <div className="rounded-md border p-3 bg-muted/40 text-sm">
-                {comment.content}
-              </div>
-              <div className="text-xs text-muted-foreground flex items-center gap-2">
-                <User className="h-3 w-3" />
-                {comment.createdByName}
-                {comment.isEdited ? " (edited)" : ""}
-              </div>
-            </>
-          ) : (
-            <p className="text-sm text-muted-foreground">No comment yet</p>
-          )}
-
-          <Separator />
-
+        <CardContent className="space-y-4 lg:space-y-8">
+          
           <div className="space-y-2">
             <p className="text-sm font-medium">
               {comment ? "Add Another Comment" : "Add Comment"}
@@ -543,7 +516,7 @@ export default function AssociateLeadDetails() {
                 <div key={entry.id} className="border rounded-md p-3 space-y-1">
                   <p className="text-sm">{entry.content}</p>
                   <p className="text-xs text-muted-foreground">
-                    v{entry.versionNumber} by {entry.editedByName}
+                    edited by {entry.editedByName}
                   </p>
                 </div>
               ))
