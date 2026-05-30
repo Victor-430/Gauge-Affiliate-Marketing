@@ -7,8 +7,6 @@ import {
   Calendar,
   Edit3,
   Loader2,
-  MessageSquare,
-  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,7 +31,6 @@ export default function AssociateLeadDetails() {
     fetchComment,
     editComment,
     fetchCommentHistory,
-    isFetchingComment,
     isAddingComment,
     isEditingComment,
     isFetchingHistory,
