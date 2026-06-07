@@ -10,7 +10,7 @@ export const useAdminData = () => {
   const [stats, setStats] = useState<AdminStats>({
     totalLeads: 0,
     convertedLeads: 0,
-    closedDeals: 0,
+    approvedDeals: 0,
     pendingDeals: 0,
     rejectedDeals: 0,
     activeAssociates: 0,

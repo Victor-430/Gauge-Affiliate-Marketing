@@ -11,8 +11,8 @@
   comment?: string;
 }
 
- type LeadStatus = "new" | "converted";
-type DealStatus = "pending" | "closed" | "rejected";
+ type LeadStatus = "pending" | "prospect" | "converted" | "new";
+type DealStatus = "pending" | "approved" | "rejected" | "closed";
 type FirestoreTimestamp = Timestamp | Date | string | null | undefined;
 
 interface Lead {
@@ -41,6 +41,7 @@ interface Lead {
   submittedAt: Timestamp;
   convertedAt?: Timestamp;
   dealClosedAt?: Timestamp;
+  dealResolvedAt?: Timestamp;
 
   // Admin Actions
   adminNotes?: string;

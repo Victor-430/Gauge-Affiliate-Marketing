@@ -1,7 +1,8 @@
  interface AssociateStats {
   totalLeads: number;
     convertedLeads: number;
-    closedDeals: number;
+    approvedDeals: number;
+    closedDeals?: number;
     rejectedDeals: number;
     pendingDeals: number;
  }

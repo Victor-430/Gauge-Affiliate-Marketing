@@ -30,57 +30,115 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatDate } from "@/utils/FormatDate";
 import { useNavigate } from "react-router";
 
+const formatStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    pending: "Pending",
+    prospect: "Prospect",
+    converted: "Converted",
+    approved: "Approved",
+    rejected: "Rejected",
+    closed: "Approved",
+    new: "Pending",
+  };
+
+  return labels[status] || status;
+};
+
 function LeadStatusBadge({ status }: { status: string }) {
+  const normalizedStatus = status === "new" ? "pending" : status;
+  const styles: Record<string, string> = {
+    pending: "bg-muted text-muted-foreground",
+    prospect: "bg-blue-100 text-blue-700",
+    converted: "bg-foreground text-background",
+  };
+
   return (
     <Badge
-      variant={status === "converted" ? "default" : "secondary"}
-      className={status === "converted" ? "bg-foreground text-background" : ""}
+      variant={normalizedStatus === "converted" ? "default" : "secondary"}
+      className={styles[normalizedStatus] || ""}
     >
-      {status}
+      {formatStatusLabel(normalizedStatus)}
     </Badge>
   );
 }
 
 function DealStatusBadge({ status }: { status: string | null }) {
   if (!status) return <span className="text-muted-foreground text-xs">-</span>;
+  const normalizedStatus = status === "closed" ? "approved" : status;
   const styles: Record<string, string> = {
     pending: "bg-muted text-muted-foreground",
-    closed: "bg-foreground text-background",
+    approved: "bg-foreground text-background",
     rejected: "bg-destructive text-destructive-foreground",
   };
-  return <Badge className={styles[status] || ""}>{status}</Badge>;
+  return (
+    <Badge className={styles[normalizedStatus] || ""}>
+      {formatStatusLabel(normalizedStatus)}
+    </Badge>
+  );
 }
+
+const getTimestampMs = (timestamp: Lead["convertedAt"]) => {
+  if (!timestamp) return null;
+  if (typeof timestamp.toDate === "function") return timestamp.toDate().getTime();
+
+  const parsed = new Date(timestamp as unknown as Date | string).getTime();
+  return Number.isNaN(parsed) ? null : parsed;
+};
 
 export default function AssociateLeads() {
   const {
     leads,
     isLoading: loading,
     error,
+    markProspect,
     convertLead,
     undoConvertedLead,
   } = useAssociateData();
+  const [prospecting, setProspecting] = useState(false);
   const [converting, setConverting] = useState(false);
   const [undoing, setUndoing] = useState(false);
   const navigate = useNavigate();
 
+  const canMarkProspect = (lead: Lead) => {
+    return lead?.leadStatus === "pending" && !lead?.dealStatus;
+  };
+
   const canConvert = (lead: Lead) => {
     return (
-      lead?.leadStatus === "new" &&
-      lead?.dealStatus !== "closed" &&
+      (lead?.leadStatus === "pending" || lead?.leadStatus === "prospect") &&
+      lead?.dealStatus !== "approved" &&
       lead?.dealStatus !== "rejected"
     );
   };
 
   const canUndo = (lead: Lead) => {
     if (lead?.leadStatus !== "converted" || !lead?.convertedAt) return false;
-    if (lead?.dealStatus === "closed" || lead?.dealStatus === "rejected") return false;
-    return Date.now() - lead.convertedAt.toDate().getTime() < 30 * 60 * 1000;
+    if (lead?.dealStatus !== "pending") return false;
+    const convertedAtMs = getTimestampMs(lead.convertedAt);
+    if (!convertedAtMs) return false;
+    return Date.now() - convertedAtMs < 30 * 60 * 1000;
+  };
+
+  const handleMarkProspect = async (leadId: string) => {
+    setProspecting(true);
+    try {
+      await markProspect(leadId);
+      toast.success("Lead marked as prospect", {
+        position: "top-right",
+      });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to mark prospect", {
+        position: "top-right",
+      });
+    } finally {
+      setProspecting(false);
+    }
   };
 
   const handleConvert = async (leadId: string) => {
     const lead = leads.find((l) => l.id === leadId);
     if (lead && !canConvert(lead)) {
-      toast.error("Cannot convert: deal is closed or rejected", {
+      toast.error("Cannot convert this lead", {
         position: "top-right",
       });
       return;
@@ -111,7 +169,7 @@ export default function AssociateLeads() {
     setUndoing(true);
     try {
       await undoConvertedLead(leadId);
-      toast.success("Lead reverted to new", {
+      toast.success("Lead reverted to pending", {
         position: "top-right",
       });
     } catch {
@@ -213,6 +271,15 @@ export default function AssociateLeads() {
                           <DropdownMenuItem onClick={() => navigate(`/leads/${lead.id}`)}>
                             View Details
                           </DropdownMenuItem>
+                          {canMarkProspect(lead) && (
+                            <DropdownMenuItem
+                              onClick={() => handleMarkProspect(lead?.id)}
+                              disabled={prospecting}
+                            >
+                              <ArrowUpRight className="h-4 w-4 mr-2" />
+                              Prospect
+                            </DropdownMenuItem>
+                          )}
                           {canConvert(lead) && (
                             <DropdownMenuItem
                               onClick={() => handleConvert(lead?.id)}

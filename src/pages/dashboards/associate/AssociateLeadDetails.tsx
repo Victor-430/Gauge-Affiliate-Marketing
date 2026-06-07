@@ -21,6 +21,22 @@ import { useComment } from "@/hooks/useComment";
 import { formatFullDate } from "@/utils/FormatDate";
 import type { Comment, CommentRevision } from "@/types/Comment";
 
+const formatStatusLabel = (status: string | null) => {
+  if (!status) return "-";
+
+  const labels: Record<string, string> = {
+    pending: "Pending",
+    prospect: "Prospect",
+    converted: "Converted",
+    approved: "Approved",
+    rejected: "Rejected",
+    closed: "Approved",
+    new: "Pending",
+  };
+
+  return labels[status] || status;
+};
+
 export default function AssociateLeadDetails() {
   const { leadId } = useParams();
   const navigate = useNavigate();
@@ -308,7 +324,8 @@ export default function AssociateLeadDetails() {
           <CardTitle className="flex items-center justify-between gap-4">
             <span>{lead.companyName}</span>
             <div className="flex items-center gap-2">
-              <Badge>{lead.leadStatus}</Badge>
+              <Badge>{formatStatusLabel(lead.leadStatus)}</Badge>
+              {lead.dealStatus && <Badge>{formatStatusLabel(lead.dealStatus)}</Badge>}
               {!isEditingLeadInfo && (
                 <Button variant="outline" size="sm" onClick={openEditLead}>
                   <Edit3 className="h-4 w-4 mr-2" />

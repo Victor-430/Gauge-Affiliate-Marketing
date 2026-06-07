@@ -4,7 +4,9 @@ export const calculateAdminStats = (
 ): AdminStats => ({
   totalLeads: leadsData.length,
   convertedLeads: leadsData.filter((l) => l.leadStatus === "converted").length,
-  closedDeals: leadsData.filter((l) => l.dealStatus === "closed").length,
+  approvedDeals: leadsData.filter(
+    (l) => l.dealStatus === "approved" || l.dealStatus === "closed",
+  ).length,
   pendingDeals: leadsData.filter((l) => l.dealStatus === "pending").length,
   rejectedDeals: leadsData.filter((l) => l.dealStatus === "rejected").length,
   activeAssociates,
@@ -57,14 +59,16 @@ export const calculateMonthlyData = (leadsData: Lead[]): MonthlyLeadData[] => {
 export const calculateDealStatusData = (leadsData: Lead[]): DealStatusData[] => {
   const counts = {
     pending: leadsData.filter((l) => l.dealStatus === "pending").length,
-    closed: leadsData.filter((l) => l.dealStatus === "closed").length,
+    approved: leadsData.filter(
+      (l) => l.dealStatus === "approved" || l.dealStatus === "closed",
+    ).length,
     rejected: leadsData.filter((l) => l.dealStatus === "rejected").length,
     new: leadsData.filter((l) => l.dealStatus === null).length,
   };
 
   return [
     { name: "Pending", value: counts.pending, fill: "hsl(217, 91%, 60%)" },
-    { name: "Closed", value: counts.closed, fill: "hsl(142, 71%, 45%)" },
+    { name: "Approved", value: counts.approved, fill: "hsl(142, 71%, 45%)" },
     { name: "Rejected", value: counts.rejected, fill: "hsl(0, 84%, 60%)" },
     { name: "New", value: counts.new, fill: "hsl(45, 93%, 47%)" },
   ];

@@ -4,17 +4,34 @@ import {
   collection,
   doc,
   getDoc,
-  increment,
   onSnapshot,
   orderBy,
   query,
-  Timestamp,
-  updateDoc,
   where,
 } from "firebase/firestore";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useComment } from "./useComment";
 import type { Comment } from "@/types/Comment";
+import { authFetch } from "@/lib/authFetch";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+interface StatusUpdateResponse {
+  success: boolean;
+  message?: string;
+}
+
+const parseErrorMessage = (data: any, fallback: string) => {
+  return data?.message || data?.error || fallback;
+};
+
+const normalizeLeadStatus = (status: Lead["leadStatus"]) => {
+  return status === "new" ? "pending" : status;
+};
+
+const normalizeDealStatus = (status: Lead["dealStatus"]) => {
+  return status === "closed" ? "approved" : status;
+};
 
 export const useAssociateData = () => {
   const { user, loading: authLoading } = useAuth();
@@ -106,10 +123,16 @@ export const useAssociateData = () => {
     const unsubscribe = onSnapshot(
       leadQuery,
       (snapshot) => {
-        const leadsData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Lead[];
+        const leadsData = snapshot.docs.map((doc) => {
+          const data = doc.data() as Lead;
+
+          return {
+            ...data,
+            id: doc.id,
+            leadStatus: normalizeLeadStatus(data.leadStatus),
+            dealStatus: normalizeDealStatus(data.dealStatus),
+          };
+        }) as Lead[];
 
         const hydratedLeads = leadsData.map((lead) => ({
           ...lead,
@@ -170,56 +193,52 @@ export const useAssociateData = () => {
     };
   }, [user, authLoading, fetchComment, updateLatestCommentForLead]);
 
-  const convertLead = async (leadId: string) => {
+  const updateLeadStatus = async (leadId: string, path: string, fallback: string) => {
     if (!user) throw new Error("User not authenticated");
 
     try {
-      const leadRef = doc(db, "leads", leadId);
+      const { response, data } = await authFetch<StatusUpdateResponse>(
+        `${API_URL}/leads/${leadId}/${path}`,
+        {
+          method: "PATCH",
+        },
+      );
 
-      await updateDoc(leadRef, {
-        leadStatus: "converted",
-        convertedAt: Timestamp.now(),
-      });
+      if (!response.ok || !data?.success) {
+        throw new Error(parseErrorMessage(data, fallback));
+      }
 
-      const associateRef = doc(db, "associates", user.uid);
-      await updateDoc(associateRef, {
-        "stats.convertedLeads": increment(1),
-      });
-
-      return { success: true };
+      return data;
     } catch (err) {
-      // console.error("Error converting lead:", err);
-      throw new Error("Failed to convert lead");
+      throw err instanceof Error ? err : new Error(fallback);
     }
   };
 
+  const markProspect = async (leadId: string) => {
+    return updateLeadStatus(
+      leadId,
+      "status/prospect",
+      "Failed to mark lead as prospect",
+    );
+  };
+
+  const convertLead = async (leadId: string) => {
+    return updateLeadStatus(leadId, "status/convert", "Failed to convert lead");
+  };
+
   const undoConvertedLead = async (leadId: string) => {
-    if (!user) throw new Error("User not authenticated");
-
-    try {
-      const leadRef = doc(db, "leads", leadId);
-      await updateDoc(leadRef, {
-        leadStatus: "new",
-        convertedAt: null,
-      });
-
-      const associateRef = doc(db, "associates", user.uid);
-
-      await updateDoc(associateRef, {
-        "stats.convertedLeads": increment(-1),
-      });
-
-      return { success: true };
-    } catch (err) {
-      // console.error("Error undoing lead conversion", err);
-      throw new Error("Failed to undo lead conversion");
-    }
+    return updateLeadStatus(
+      leadId,
+      "status/undo-conversion",
+      "Failed to undo lead conversion",
+    );
   };
   return {
     associate,
     leads,
     isLoading,
     error,
+    markProspect,
     convertLead,
     undoConvertedLead,
     updateLatestCommentForLead,

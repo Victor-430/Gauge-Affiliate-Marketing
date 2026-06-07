@@ -25,25 +25,51 @@ import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatDate } from "@/utils/FormatDate";
 
+const formatStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    pending: "Pending",
+    prospect: "Prospect",
+    converted: "Converted",
+    approved: "Approved",
+    rejected: "Rejected",
+    closed: "Approved",
+    new: "Pending",
+  };
+
+  return labels[status] || status;
+};
+
 function LeadStatusBadge({ status }: { status: string }) {
+  const normalizedStatus = status === "new" ? "pending" : status;
+  const styles: Record<string, string> = {
+    pending: "bg-muted text-muted-foreground",
+    prospect: "bg-blue-100 text-blue-700",
+    converted: "bg-foreground text-background",
+  };
+
   return (
     <Badge
-      variant={status === "converted" ? "default" : "secondary"}
-      className={status === "converted" ? "bg-foreground text-background" : ""}
+      variant={normalizedStatus === "converted" ? "default" : "secondary"}
+      className={styles[normalizedStatus] || ""}
     >
-      {status}
+      {formatStatusLabel(normalizedStatus)}
     </Badge>
   );
 }
 
 function DealStatusBadge({ status }: { status: string | null }) {
   if (!status) return <span className="text-muted-foreground text-xs">—</span>;
+  const normalizedStatus = status === "closed" ? "approved" : status;
   const styles: Record<string, string> = {
     pending: "bg-muted text-muted-foreground",
-    closed: "bg-foreground text-background",
+    approved: "bg-foreground text-background",
     rejected: "bg-destructive text-white",
   };
-  return <Badge className={styles[status] || ""}>{status}</Badge>;
+  return (
+    <Badge className={styles[normalizedStatus] || ""}>
+      {formatStatusLabel(normalizedStatus)}
+    </Badge>
+  );
 }
 
 export default function AssociateDashboard() {
@@ -98,8 +124,8 @@ export default function AssociateDashboard() {
       icon: Clock,
     },
     {
-      label: "Closed Deals",
-      value: associate.stats?.closedDeals,
+      label: "Approved Deals",
+      value: associate.stats?.approvedDeals ?? associate.stats?.closedDeals ?? 0,
       icon: CheckCircle2,
     },
     { label: "Rejected", value: associate.stats?.rejectedDeals, icon: XCircle },
