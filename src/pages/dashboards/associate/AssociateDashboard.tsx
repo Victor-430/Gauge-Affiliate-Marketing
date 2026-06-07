@@ -2,8 +2,8 @@ import {
   Users,
   ArrowUpRight,
   Clock,
-  CheckCircle2,
-  XCircle,
+  // CheckCircle2,
+  // XCircle,
   SendHorizontal,
   Loader2,
   AlertCircle,
@@ -57,20 +57,20 @@ function LeadStatusBadge({ status }: { status: string }) {
   );
 }
 
-function DealStatusBadge({ status }: { status: string | null }) {
-  if (!status) return <span className="text-muted-foreground text-xs">—</span>;
-  const normalizedStatus = status === "closed" ? "approved" : status;
-  const styles: Record<string, string> = {
-    pending: "bg-muted text-muted-foreground",
-    approved: "bg-foreground text-background",
-    rejected: "bg-destructive text-white",
-  };
-  return (
-    <Badge className={styles[normalizedStatus] || ""}>
-      {formatStatusLabel(normalizedStatus)}
-    </Badge>
-  );
-}
+// function DealStatusBadge({ status }: { status: string | null }) {
+//   if (!status) return <span className="text-muted-foreground text-xs">—</span>;
+//   const normalizedStatus = status === "closed" ? "approved" : status;
+//   const styles: Record<string, string> = {
+//     pending: "bg-muted text-muted-foreground",
+//     approved: "bg-foreground text-background",
+//     rejected: "bg-destructive text-white",
+//   };
+//   return (
+//     <Badge className={styles[normalizedStatus] || ""}>
+//       {formatStatusLabel(normalizedStatus)}
+//     </Badge>
+//   );
+// }
 
 export default function AssociateDashboard() {
   const { associate, leads, isLoading, error } = useAssociateData();

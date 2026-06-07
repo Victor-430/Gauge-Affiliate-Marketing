@@ -62,20 +62,20 @@ function LeadStatusBadge({ status }: { status: string }) {
   );
 }
 
-function DealStatusBadge({ status }: { status: string | null }) {
-  if (!status) return <span className="text-muted-foreground text-xs">-</span>;
-  const normalizedStatus = status === "closed" ? "approved" : status;
-  const styles: Record<string, string> = {
-    pending: "bg-muted text-muted-foreground",
-    approved: "bg-foreground text-background",
-    rejected: "bg-destructive text-destructive-foreground",
-  };
-  return (
-    <Badge className={styles[normalizedStatus] || ""}>
-      {formatStatusLabel(normalizedStatus)}
-    </Badge>
-  );
-}
+// function DealStatusBadge({ status }: { status: string | null }) {
+//   if (!status) return <span className="text-muted-foreground text-xs">-</span>;
+//   const normalizedStatus = status === "closed" ? "approved" : status;
+//   const styles: Record<string, string> = {
+//     pending: "bg-muted text-muted-foreground",
+//     approved: "bg-foreground text-background",
+//     rejected: "bg-destructive text-destructive-foreground",
+//   };
+//   return (
+//     <Badge className={styles[normalizedStatus] || ""}>
+//       {formatStatusLabel(normalizedStatus)}
+//     </Badge>
+//   );
+// }
 
 const getTimestampMs = (timestamp: Lead["convertedAt"]) => {
   if (!timestamp) return null;
