@@ -111,24 +111,32 @@ export default function AssociateDashboard() {
     );
   }
 
+  const pendingLeadCount = leads.filter((lead) => lead.leadStatus === "pending").length;
+  const prospectLeadCount = leads.filter((lead) => lead.leadStatus === "prospect").length;
+
   const statCards = [
     { label: "Total Leads", value: associate.stats?.totalLeads, icon: Users },
+    {
+      label: "Pending Leads",
+      value: pendingLeadCount,
+      icon: Clock,
+    },
+    {
+      label: "Prospects",
+      value: prospectLeadCount,
+      icon: Users,
+    },
     {
       label: "Converted",
       value: associate.stats?.convertedLeads,
       icon: ArrowUpRight,
     },
-    {
-      label: "Pending Deals",
-      value: associate.stats?.pendingDeals,
-      icon: Clock,
-    },
-    {
-      label: "Approved Deals",
-      value: associate.stats?.approvedDeals ?? associate.stats?.closedDeals ?? 0,
-      icon: CheckCircle2,
-    },
-    { label: "Rejected", value: associate.stats?.rejectedDeals, icon: XCircle },
+    // {
+    //   label: "Approved Deals",
+    //   value: associate.stats?.approvedDeals ?? associate.stats?.closedDeals ?? 0,
+    //   icon: CheckCircle2,
+    // },
+    // { label: "Rejected Deals", value: associate.stats?.rejectedDeals, icon: XCircle },
   ];
 
   return (
@@ -171,7 +179,7 @@ export default function AssociateDashboard() {
         </Card>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {statCards.map((stat) => (
             <Card
               key={stat.label}
@@ -218,7 +226,7 @@ export default function AssociateDashboard() {
                     <TableHead>Company</TableHead>
                     <TableHead>Industry</TableHead>
                     <TableHead>Lead Status</TableHead>
-                    <TableHead>Deal Status</TableHead>
+                    {/* <TableHead>Deal Status</TableHead> */}
                     <TableHead className="text-right">Date</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -234,9 +242,9 @@ export default function AssociateDashboard() {
                       <TableCell>
                         <LeadStatusBadge status={lead.leadStatus} />
                       </TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         <DealStatusBadge status={lead.dealStatus} />
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell className="text-right text-muted-foreground text-sm">
                         {formatDate(lead.submittedAt)}
                       </TableCell>

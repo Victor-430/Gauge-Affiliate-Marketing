@@ -231,7 +231,7 @@ export default function AssociateLeads() {
                   <TableHead>Contact</TableHead>
                   <TableHead>Industry</TableHead>
                   <TableHead>Lead Status</TableHead>
-                  <TableHead>Deal Status</TableHead>
+                  {/* <TableHead>Deal Status</TableHead> */}
                   <TableHead>Latest Comment</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead className="text-right">Action</TableHead>
@@ -251,9 +251,9 @@ export default function AssociateLeads() {
                     <TableCell>
                       <LeadStatusBadge status={lead?.leadStatus} />
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <DealStatusBadge status={lead?.dealStatus} />
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell className="text-muted-foreground text-sm max-w-65 truncate">
                       {lead.latestComment?.content || "No comment yet"}
                     </TableCell>
